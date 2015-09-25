@@ -1,0 +1,6 @@
+iso9660.o: iso9660.c /data/Work/borealos/include/string.h \
+  /data/Work/borealos/include/stddef.h \
+  /data/Work/borealos/include/types.h \
+  /data/Work/borealos/include/compiler.h \
+  /data/Work/borealos/include/drivers/fs/iso9660/Iso9660.h \
+  /data/Work/borealos/include/stdlib.h

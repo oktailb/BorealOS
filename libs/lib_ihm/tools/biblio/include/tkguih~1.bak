@@ -1,0 +1,20 @@
+// Let C compilers ignore the C++ stuff
+#ifndef __cplusplus
+#define NO_CPP_COMPILER
+#endif
+#ifndef NO_CPP_COMPILER
+
+class TkGUI_Window
+{
+	private:
+	
+	protected:
+		int _fen;
+	
+	public:
+		TkGUI_Window(int x, int y, int width, int height);
+		virtual ~TkGUI_Window(void)
+			
+};
+
+#endif

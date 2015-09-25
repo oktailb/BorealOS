@@ -1,0 +1,4 @@
+le 12/06/2003 : reprise à zéro du projet
+	Je décide de tout reprendre à zéro, OWL est mort, DreamOS est mort, vive ... ? tient , il faut un nom ! TODO, le trouver !
+le 16/06/2003 : structure établie !
+	Un squelette à été trouvé pour les sources, les Makefiles sont écrits et quelques bouts de code portés. On se dirige vers un OS pleinement modulaire et un système de boot indépendant de grub mais compatible ...

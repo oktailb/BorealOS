@@ -1,0 +1,236 @@
+.TH lib_graf n  "March 9, 2005" "version 0.9" "LIBRARY"
+.SH NAME
+lib_graf \- usefull library for programming graph and trees
+.SH SYNOPSIS
+.B lib_graf_$(HOSTTYPE)_$(MACHTYPE)
+.SH DESCRIPTION
+It provides many functionalities such as the courses of graphs or the detection of 
+particular structures and properties of the graphs.
+.PP
+For use it, just include 
+.PP
+/nfs/s3/space/users/prof/lecoq_v/Work/include/graf.h 
+.PP
+in your source code.
+.PP
+For compile your project, use gcc with 
+.PP
+-L/nfs/s3/space/users/prof/lecoq_v/Work/lib 
+.PP
+and 
+.PP
+-l_graf_$(HOSTTYPE)_$(MACHTYPE) 
+-l_my_$(HOSTTYPE)_$(MACHTYPE) 
+-l_sort_$(HOSTTYPE)_$(MACHTYPE) 
+-lm 
+-l_stack_$(HOSTTYPE)_$(MACHTYPE) 
+-l_ch_$(HOSTTYPE)_$(MACHTYPE)
+.PP
+options.
+
+.SH SYNOPSYS
+.TP
+
+Data structures :
+
+typedef struct		s_graphe
+{
+  char			type;
+  int			*list;
+  int			taille;
+  int			arcs;
+  t_ch_ch_int		*graphe;
+}			t_graphe;
+
+'type' differencies an oriented graph to a non oriented graph, 
+just initialised with theses defines :
+
+#define GNO			8
+#define GO			2
+
+'*list' is the list of the numerical nodes names, each node must 
+have a internal number, it's more easy for search a particular node :)
+
+'taille' is the total number of nodes in the current graph.
+
+'arcs' is the total number of connextions between all nodes of the graph.
+
+'*graphe' is a chained list of chained list that remember the list of 
+the nodes a his particular successors.
+
+For init a new graph, you have sme possibilities :
+
+t_graphe	*init(int type);
+
+For init an empty graph.
+
+t_graphe	*init_graphe(int type, int argc, char **argv);
+
+For init a new graph with a command line arguments like 
+1-2 2-3 3-4 4-5 5-1 that define a new graphe with five nodes (1 to 5) 
+with a liaison between 1 to 2, 2 to 3, 3 to 4, 4 to 5, and 5 to 1.
+
+t_graphe	*initRand(int type, int size);
+
+For init a random graph of 'size' nodes.
+
+t_graphe	*initRandK(int type, int size, int k);
+
+For init a random graph of 'size' nodes, limited to 'k' connections to each othes nodes.
+
+Now, we cam use some utilities functions to manage graphs :
+
+t_graphe	*grafdup(t_graphe *);
+
+Is a strdup like, but with graph :)
+
+int		effacer(t_graphe *);
+
+To properly kill a graph.
+
+void		afficher(t_graphe *);
+
+To show a graphe with the list of her nodes and his successors.
+
+int		taille(t_graphe* graphe);
+
+Use it to get the sizs in nodes of the graph.
+
+void		extract(t_graphe *, t_graphe **, int);
+
+To extract a sub- graph to a graph by an unique node.
+
+int		adjacent(t_graphe *, int, int);
+
+To test if two nodes have a common liaison.
+
+int		existe_sommet(t_graphe *g, int node);
+
+To test if a node number exist, usefull before creating a new liaison.
+
+int		ajouterArc(t_graphe *g, int x, int y, void *data);
+
+Use it for add a new liaison between node x and y, and associate it with a data 
+(usefull for mathematical or logical solver)
+
+t_graphe	*retirerArc(t_graphe *g, int x, int y);
+
+To delete a liaison between x and y ...
+
+t_graphe	*ajouterSommet(t_graphe *g, int n);
+
+To add a new node 'n' to g.
+
+t_graphe	*retirerSonmmet(t_graphe *g, int n);
+
+to delete the node 'n' of g.
+
+int		coloriage(t_graphe *g, int **tab);
+
+To get the minimal number of colors to colorise the g graph.
+the result is int an integer tab, that conain a reference number for each colors.
+
+void		affiche_coloriage(int *tab, int size);
+
+just a littel function for show a colorisation of a graph.
+
+int		calc_connexes(t_graphe *g, t_ch_ch_int **conx);
+
+Return the number of connexionnal areas of the g graph.
+conx is a chained list of chained list that represent 
+the list of connexionnal areas of g.
+
+int		calc_cliques(t_graphe *g, t_ch_ch_int **clik);
+
+Return the number of high connexionnal areas of the g graph.
+clik is a chained list of chained list that represent 
+the list of connexionnal areas of g.
+
+int		estParfait(t_graphe *);
+
+If the minimal number colors of a graph is egal to the size of the 
+maximal clik size, a graph is perfect (challenge : find a non perfect graph)
+
+void		lire(t_graphe *, char *);
+void		sauve(t_graphe *, char *);
+
+Useless ...
+
+t_graphe	*parcours_profondeur(t_graphe *g, int start);
+t_graphe	*parcours_largeur(t_graphe *g, int start);
+
+Two major types of courses of a graph starting to the 'start' node.
+
+void		SetOutputTrace(char *fname, char *type, char *stle);
+
+Optionnaly used for define the output of gnuplot Trace (next chapter), you have the defaults choices :
+
+For types :
+
+#define dxf		"dxf"
+#define fig		"fig"
+#define gif		"gif"
+#define jpeg		"jpeg"
+#define latex		"latex"
+#define pdf		"pdf"
+#define png		"png"
+#define postscript	"postscript"
+#define svg		"svg"
+#define x11		"x11"
+
+For styles
+
+#define dxf_style	 ""
+#define fig_style	 "color portrait big"
+#define gif_style	 "transparent giant"
+#define jpeg_style	 "giant"
+#define latex_style	 "default"
+#define pdf_style	 ""
+#define png_style	 "transparent giant"
+#define postscript_style "portrait"
+#define svg_style	 ""
+#define x11_style	 ""
+
+You can use your onw parameters or this default defines.
+
+void			Trace(t_graphe *g, int (*separator)(t_graphe *, t_ch_ch_int**), void (*drawer)(t_ch_ch_int **, int *));
+
+This function generate a serial of gnuplot commands that draw the g graph on the gnuplot output. She need a separator function (like calc_connexes or calc_cliques, they are prototyped for that :) ) and a drawer fonction to calculate the coordonates of each nodes on the output. For drawer, you have the choice between :
+
+void			genere_coord_steps(t_ch_ch_int **, int *);
+
+Generate a step by step drawing, usefull particulary for trees.
+
+void			genere_coord_circle(t_ch_ch_int **, int *);
+
+Generate a circle repartition of each group of nodes.
+
+void			genere_coord_spiral(t_ch_ch_int **, int *);
+
+Generate a spiral repartition of each group of nodes.
+
+.SH EXAMPLES
+.TP
+#include <graf.h>
+
+int		main(int argc, char *argv[])
+{
+  t_graphe	*g;
+  t_graphe	*parcours;
+
+  g = init_graphe(GNO, argc, argv);
+  parcours = parcours_largeur(g, 6);
+  SetOutputTrace("test.x11", x11, x11_style);
+  Trace(g, calc_connexes, genere_coord_spiral);
+  effacer(g);
+  effacer(parcours);
+  return (0);
+}
+.PP
+.TP
+.PP
+$(CC) test_lib.c -o test $(CFLAGS) -l_graf_$(HOSTTYPE)_$(MACHTYPE) -l_my_$(HOSTTYPE)_$(MACHTYPE) -l_sort_$(HOSTTYPE)_$(MACHTYPE) -lm -l_stack_$(HOSTTYPE)_$(MACHTYPE) -l_ch_$(HOSTTYPE)_$(MACHTYPE)
+
+
+.SH SEE ALSO
+eject(1)

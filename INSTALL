@@ -1,0 +1,86 @@
+Procedure d'installation de DreamOS 
+
+C'est la procédure d'installation à partir de Linux (distribution Mandrake). 
+Il doit etre possible  de le faire à partir de Windows mais je ne sais pas comment :-)
+
+Prérequis
+
+Il semble que gcc version 2.96 20000731 au minimum soit requis pour faire la compilation 
+
+Comment compiler??
+
+
+Allez dans le repertoire ou se trouve les sources
+
+L'installation doit se faire de facon automatique (si ce n'etait pas le cas 
+Veuillez envoyer un mail signalant le probléme qu groupe de trvail de OWL)
+
+configure
+make depend
+make
+
+
+Comment installer??
+
+Il faut formater une disquette au format DOS soit en utilisant la commande 
+mkfs.dos ou en utilisant mformat (Ce programme est inclus dans le RPM mtools),
+avec la ligne de commande suivante
+
+	mformat -f 1440 a:
+ou
+	mkfs.msdos /dev/fd0  
+si le lecteur de disquette est bien en /dev/fd0 (c'est la config par défaut)
+
+
+Puis creer une structure de repertoires minimale
+en root (su root)
+
+	mount /dev/fd0 /mnt/floppy
+	mkdir /mnt/floppy/boot
+	mkdir /mnt/floppy/boot/grub
+
+Puis installer Grub sur la disquette
+Il faut faut le binaire de grub et deux fichier stage1 et stage2
+Pour une distribution madrake grub n'est accessible qu'en root
+et les fichiers stage1 et stage2 se trouve en /boot/grub/
+Si tous est OK faites:
+
+	cp /boot/grub/stage1 /mnt/floppy/boot/grub/
+	cp /boot/grub/stage2 /mnt/floppy/boot/grub/
+	
+
+Maintenant il faut copier le fichier de config de grub
+	cp grub/menu.lst /mnt/floppy/boot/grub
+
+	umount /mnt/floppy
+
+Maintenant que grub est correctement installer sur la disquette il faut
+installer grub dans le mbr (attention sur certaine config il faut etre root pour poivoir utiliser grub faites "su root" )
+
+	grub
+Cela lance l'editeur de commande grub, aprés  	
+	install= (fd0)/boot/grub/stage1 (fd0) (fd0)/boot/grub/stage2
+	quit
+
+Enfin il faut installer l'image du kernel sur la disquette
+	make
+	make install
+	(pour que cela fonctionne il faut que l'entree /mnt/floppy dans le fichier /etc/fstab soit correctement paramétré)
+
+	autrement (en mode root)
+	mount /dev/fd0 /mnt/floppy
+	cp kernel.elf /mnt/floppy/kernel
+	umount /mnt/floppy
+	
+Vous pouvez rebooter avec la disquette ou utiliser bochs si il est bien 
+installé (lire le fichier BOCHS)
+
+Si vous avez des problémes, des questions ou des remarques, envoyez moi un
+mail gdorchie@club-internet.fr
+
+A++ 
+GDO
+
+	
+		
+	

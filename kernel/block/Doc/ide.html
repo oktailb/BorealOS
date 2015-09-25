@@ -1,0 +1,757 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head><title>Protocole IDE</title></head>
+<body>
+<center><table cellspacing=0 cellpadding=0 bgcolor=#999999 width=100% cols=2>
+<tr><td width=50% align=left><b><font color=#ffffff>OWL/IDE</font></b></td><td width=50% align=right><b><font color=#ffffff>Projet de documentation d'OWL</font></b></td></tr></table>
+<table width=100% bgcolor=#999999 cellspacing=0 cellpadding=0> 
+<tr><td align=center width=100%><b><font color=#ffffff size=+3>PROTOCOLE IDE</font></b></td></tr>
+</table>
+<table cellspacing=0 cellpadding=0 bgcolor=#999999 width=90%><tr><td align=center width=100%><font color=#ffffff>Ce document d&eacute;crit le fonctionnement du protocole IDE<br>&nbsp;</font></td></tr></table>
+
+<hr width=80%>
+<table width=100% cols=2>
+<tr>
+<td><b>Auteurs originels :</b>
+<blockquote>ArnaK, Inc.
+<br><a href="mailto:arnak@extraterrestre.net">arnak@extraterrestre.net</a>
+<br><a href="http://www.arnak.fr.st">http://www.arnak.fr.st</a>
+</blockquote>
+</td>
+
+<td><b>Version : </b>0.2b
+<br><b>Date de c&eacute;ation du fichier :</b> 04 Juin 2001
+<br><b>Date de derni&egrave;re mise &agrave; jour du fichier :</b> 11 Novembre 2001
+<p><b>R&eacute;visions :</b>
+<br>- Version 0.1 du 04 Juin 2001 par ArnaK, Inc. :
+<br>Premi&eacute;re version, ATA.
+<br>- Version 0.2 du 25 Septembre 2001 par ArnaK, Inc. :
+<br>ATA/ATAPI.
+<br>- Version 0.2b du 11 Novembre 2001 par ArnaK, Inc. :
+<br>Fonction Packet : Prevent Allow Medium Removal
+<p><b>TODO :</b>
+<br>- Ajouter une partie sur les transferts DMA</td></tr></table>
+
+<hr width=80%> 
+
+</center>
+
+<a name=sommaire><h2>Sommaire</h2>
+
+<blockquote>
+  <a href="#intro">I. Introduction</a>
+  <br><a href="#present">II. Pr&eacute;sentation</a>
+  <blockquote>
+    <a href="#pr_ataatapi">II.1. ATA et ATAPI</a>
+    <br><a href="#pr_packet">II.2. Jeu d'instructions <i>Packet</i></a>
+  </blockquote>
+  <br><a href="#ports">III Ports et commandes</a>
+  <blockquote>
+    <a href="#p_recap">III.1. R&eacute;capitulatif des ports</a>
+    <br><a href="#p_details">III.2. D&eacute;tails des principaux ports</a>
+    <br><a href="#p_commandes">III.3. Principales commandes</a>
+  </blockquote>
+  <br><a href="#op">IV. Quelques op&eacute;rations courantes</a>
+  <blockquote>
+    <a href="#o_detectc">IV.1. D&eacute;tecter les contr&ocirc;leurs</a>
+    <br><a href="#o_detectd">IV.2. D&eacute;tecter les disques</A>
+    <br><a href="#o_infos">IV.3. Obtenir quelques informations sur un disque</a>
+    <br><a href="#o_reset">IV.4. Initialiser un contr&ocirc;leur</A>
+    <br><a href="#o_read">IV.5. Lire</a>
+    <br><a href="#o_write">IV.6. &Eacute;crire</A>
+    <br><a href="#o_erreur">IV.7. Prise en charge des erreurs</A>
+    <br><a href="#o_atapi">IV.8. D&eacute;tecter le protocole</a>
+    <br><a href="#o_taille">IV.9. D&eacute;terminer la capacit&eacute;</a>
+    <br><a href="#o_lock">IV.10. Interdire ou autoriser le retrait du m&eacute;dia</a>
+  </blockquote>
+  <a href="#avancees">V. Fonctions plus avanc&eacute;es</a>
+  <blockquote>
+    <a href="#a_lba">V.1. LBA - <i>Logical Block Address</i></a>
+    <blockquote>
+      <a href="#al_present">V.1.1. Pr&eacute;sentation</a>
+      <br><a href="#al_util">V.1.2. Utilisation, diff&eacute;rences par rapport au mode CHS</A>
+      <br><a href="#al_conv">V.1.3. Conversion d'une adresse CHS en adresse LBA et inversement</a>
+    </blockquote>
+  </blockquote>
+  <a href="#conclu">VI. Conclusion</a>
+  <br><a href="#sources">A. Sources</a>
+</blockquote>
+
+<h2><a name=intro href="#sommaire">I. Introduction</a></h2>
+
+<p>Le protocole IDE (Integrated Drive Electronics) est un des standards les plus r&eacute;pandus en ce qui concerne les disques durs. Tout syst&egrave;me digne de ce nom doit donc imp&eacute;rativement supporter ce protocole par le biais d'un pilote. Bien s&ucirc;r, il serait plus simple d'utiliser le BIOS qui fournit d&eacute;j&agrave; des fonctions d'acc&egrave;s aux disques durs (interruption 13h) mais ces fonctions sont limit&eacute;es, lentes, et parfois bogu&eacute;es. Se baser sur le BIOS ne permet donc pas d'avoir un syst&egrave;me fiable sans compter qu'en mode prot&eacute;g&eacute;, c'est impossible. C'est pourquoi il nous faut r&eacute;&eacute;crire les routines d'acc&egrave;s aux disques.
+
+<p><i>Ce document pr&eacute;sente le protocole IDE. Il n'est pas exhaustif et de nombreuses fonctions sont &eacute;voqu&eacute;es sans &ecirc;tre d&eacute;taill&eacute;es. N&eacute;anmoins, les informations contenues dans ce document suffisent pour les op&eacute;rations de base, d'ailleurs illustr&eacute;es par du code.</i>
+
+<p><b>Attention : ce document ne doit servir que d'introduction. Afin d'aller plus loin dans la connaissance d'ATA et d'ATAPI, il est pr&eacute;f&eacute;rable de consulter des documents de meilleure qualit&eacute;, id&eacute;alement les sp&eacute;cifications officielles.</b>
+
+<h2><a name=present href=#sommaire>II. Pr&eacute;sentation</a></h2>
+
+<p>Les disques sont branch&eacute;s sur des <b>contr&ocirc;leurs</b>. Sur les anciennes cartes, il n'y en a qu'un mais actuellement la plupart des cartes m&egrave;res proposent 2 contr&ocirc;leurs, voire 4. Chaque contr&ocirc;leur permet de brancher 2 disques dur : un <b>ma&icirc;tre</b> et un <b>esclave</b>. Une carte m&egrave;re disposant de 2 contr&ocirc;leurs IDE permet donc de brancher 4 disques durs. La distinction ma&icirc;tre/esclave permet simplement de reconna&icirc;tre les disques mais l'utilisation de chacun d'eux est similaire.
+
+<h3><a name=pr_ataatapi href=#sommaire>II.1. ATA et ATAPI</a></h3>
+
+<p>Le protocole IDE correspond en r&eacute;alit&eacute; au protocole ATA/ATAPI.
+<bR>ATAPI (ATA with Packet Interface extension) est en fait une extension de ATA (AT Attachement). Ce dernier est le protocole utilis&eacute; par les disques durs IDE tandis qu'ATAPI est plut&ocirc;t utilis&eacute; par les lecteurs et graveurs de CD-ROM et DVD ainsi que par quelques lecteurs de disquettes sp&eacute;ciales de type ZIP par exemple.
+
+<p>La principale diff&eacute;rence entre les deux protocoles r&eacute;side dans l'existance, dans ATAPI, de l'extension <i>Packet Interface</i> qui impl&eacute;mente le jeu d'instructions <i>Packet</i>. De plus, de nombreuses commandes ATA sont interdites si ce jeu d'instructions est pr&eacute;sent.
+
+<p>Dans les sections suivantes, les commandes r&eacute;serv&eacute;es &agrave; ATA ou &agrave; ATAPI seront indiqu&eacute;e. Les commandes communes aux deux protocoles ne proteront pas de mention sp&eacute;ciale.
+
+<h3><a name=pr_packet href=#sommaire>II.2. Jeu d'instructions <i>Packet</i></a></h3>
+
+<p>Ce jeu d'instructions constitue la principale diff&eacute;rence entre ATA et ATAPI. Il impl&eacute;mente les deux commandes suivantes :
+<ul>
+<li>Obtention d'informations : une commande du m&ecirc;me type existe dans le protocole ATA mais fournit des informations diff&eacute;rentes. Ces deux commandes sont d&eacute;crites plus bas.
+</li>
+<lI>Envoie d'une commande <i>Packet</i> : cette commande permet l'envoi de commandes <i>Packet</i> dans un format sp&eacute;cial par le biais du port de donn&eacute;es. Ces commandes permettent d'envoyer plus d'informations que les commandes ATA normales. Cette commande est &eacute;galement d&eacute;crite plus bas.
+</li>
+</ul>
+
+<p>Ces commandes servent d'interface &agrave; un jeu d'instructions sp&eacute;ciales sp&eacute;cifiques au type de p&eacute;riph&eacute;rique (CD-ROM, CD-R/RW, DVD, ...). Ces commandes ne sont pas d&eacute;finies par le protocole ATAPI.
+
+<p>Dans le cas des CD-ROM et des DVD, ces commandes sont d&eacute;finies par le T10 (Technical Committee T10, d&eacute;pendant de NCITS (National Committee for Information and Technology Standards) charg&eacute; de SCSI) dans les MMC (Multimedia Commands 1, 2 et 3 actuellement).
+<br><i>Note : Ces commandes &eacute;taient, pour les CD-ROM, d&eacute;finies dans le document SFF-8020i, maintenant obsol&egrave;te.</i>
+
+<p>Quelques-unes des commandes sont d&eacute;crites dans ce document.
+
+<h2><a name=ports href=#sommaire>III. Ports et commandes</a></h2>
+
+<h3><a name=p_recap href=#sommaire>III.1. R&eacute;capitulatif</a></h3>
+
+<p>Voici un r&eacute;capitulatif des ports utilis&eacute;s par le protocole IDE.
+
+<center><p><table cols="2" width=80% border=1>
+<tr><td>1F0 + <i>X</i></td><td>Registres de commande du 1e contr&ocirc;leur</td></tr>
+<tr><td>3F0 + <i>Y</i></td><td>Registres de contr&ocirc;le du 1e contr&ocirc;leur</tD></tr>
+<tr><td>170 + <i>X</i></td><td>Registres de commande du 2e contr&ocirc;leur</td></tr>
+<tr><td>370 + <i>Y</i></td><td>Registres de contr&ocirc;le du 2e contr&ocirc;leur</tD></tr>
+<tr><td>F0 + <i>X</i></td><td>Registres de commande du 3e contr&ocirc;leur</td></tr>
+<tr><td>2F0 + <i>Y</i></td><td>Registres de contr&ocirc;le du 3e contr&ocirc;leur</tD></tr>
+<tr><td>70 + <i>X</i></td><td>Registres de commande du 4e contr&ocirc;leur</td></tr>
+<tr><td>270 + <i>Y</i></td><td>Registres de contr&ocirc;le du 4e contr&ocirc;leur</tD></tr>
+</table>
+</center>
+
+<p><table cols="2" width=100% border=0>
+<tr><td align=center valign=top>
+<table cols="2" width=80% border=1>
+<tr><td>X</tD><td>Signification</td></tr>
+<tr><td colspan=2><b>Lecture (entr&eacute;e)</b></tD></tr>
+<tr><td>0</tD><td>Donn&eacute;es</td></tr>
+<tR><td>1</td><td>Registre d'erreur</tD></tr>
+<tR><td>2</td><td>Nombre de secteurs</tD></tr>
+<tR><td>3</td><td>Secteur</tD></tr>
+<tR><td>4</td><td>Cylindre inf&eacute;rieur</tD></tr>
+<tR><td>5</td><td>Cylindre sup&eacute;rieur</tD></tr>
+<tR><td>6</td><td>Lecteur et t&ecirc;te</tD></tr>
+<tR><td>7</td><td>&Eacute;tat</tD></tr>
+<tr><td colspan=2><b>&Eacute;criture (sortie)</b></td></tr>
+<tR><td>0</td><td>Donn&eacute;es</tD></tr>
+<tR><td>1</td><td>Pr&eacute;compensation d'&eacute;criture</tD></tr>
+<tR><td>2</td><td>Nombre de secteurs</tD></tr>
+<tR><td>3</td><td>Secteur</tD></tr>
+<tR><td>4</td><td>Cylindre inf&eacute;rieur</tD></tr>
+<tR><td>5</td><td>Cylindre sup&eacute;rieur</tD></tr>
+<tR><td>6</td><td>Lecteur et t&ecirc;te</tD></tr>
+<tR><td>7</td><td>Commande</tD></tr>
+</table>
+</td><td align=center valign=top>
+<table cols="2" width=80% border=1>
+<tr><td>Y</td><td>Signification</td></tr>
+<tr><td colspan=2><b>Lecture (entr&eacute;e)</b></tD></tr>
+<tr><td>6</td><td>&Eacute;tat du disque dur</td></tr>
+<tr><td>7</td><td>Registre d'adresses</tD></tr>
+<tr><td colspan=2><b>&Eacute;criture (sortie)</b></td></tr>
+<tr><td>6</td><td>Registre de contr&ocirc;le</td></tr>
+</table>
+</td></tr></table>
+
+<h3><a name=p_details href=#sommaire>III.2. D&eacute;tails des ports</a></h3>
+
+<p><b>70h, F0h, 170h, 1F0h - Donn&eacute;es, E/S, 16 bits</b>
+
+<p>Ce port permet de transf&eacute;rer les donn&eacute;es en lecture et en &eacute;criture.
+<br>Le transfert se fait par mots (16 bits).
+
+<a name=reg_err><p><b>71h, F1h, 171h, 1F1h - Registre des erreurs, Entr&eacute;e, 8 bits</b>
+
+<p>Ce registre contient le code d'erreur de la derni&egrave;re op&eacute;ration ex&eacute;cut&eacute;e. Apr&egrave;s la commande diagnostic, il contient le r&eacute;sultat de cette commande.
+
+<p><center><table cols=3 width="60%" border=1>
+<tr><td width="5%"><b>Bit</b></td><td width="5%"><b>Valeur</b></td><td width="90%"><b>Signification</b></td></tr>
+<tr><td>7</tD><td>1</td><td>Mauvais secteur d&eacute;tect&eacute;</td></tr>
+<tr><td>6</tD><td>1</td><td>Donn&eacute;es non corrigibles</td></tr>
+<tr><td>5</tD><td>1</td><td>Changement de support (uniquement pour les supports amovibles)</td></tr>
+<tr><td>4</tD><td>1</td><td>Secteur ou adresse non trouv&eacute;e, une requ&ecirc;te qur un emplacement inexistant a &eacute;t&eacute; demand&eacute;e</td></tr>
+<tr><td>3</tD><td>1</td><td>Demande de modification de support (uniqument pour les supports amovibles)</td></tr>
+<tr><td>2</tD><td>1</td><td>Commande interrompue</td></tr>
+<tr><td>1</tD><td>1</td><td>Piste 0 non trouv&eacute;e, erreur pendant le recalibrage</td></tr>
+<tr><td>0</tD><td>1</td><td>Secteur trouv&eacute; mais impossible d'y acc&eacute;der, le secteur est probablement endommag&eacute;</td></tr>
+<tr><td colspan="3"><b>Signification lorsque le bit d'erreur du registre d'&eacute;tat est d&eacute;fini</b></td></tr>
+</table></center>
+
+<center><p><table cols="3" width="60%" border=1>
+<tr><td width="10%"><b>Valeur</b></td><td width="45%"><b>Lecteur 0 (Maitre)</b></tD><td width="45%"><b>Lecteur 1 (Esclave)</b></tD></tR>
+<tr><td>1</tD><td>Pas d'erreur</td><td>Pas d'erreur</td></tr>
+<tr><td>2<br>3<br>4<br>5</td><td>Erreur</td><td>Pas d'erreur</td></tr>
+<tr><tD>0x81</td><td>Pas d'erreur</td><td>Erreur</td></tr>
+<tr><td>0x82<br>0x83<br>0x84<br>0x85</td><td>Erreur</td><tD>Erreur</td></tr>
+<tr><td colspan="3"><b>Signification apr&egrave;s la commande diagnostic (lecteur 0 (maitre) s&eacute;lectionn&eacute;)</b></td></tr>
+</table></center>
+
+<p>Lors de l'ex&eacute;cution de la commande diagnostic, le maitre est s&eacute;lectionn&eacute;. Pour obtenir l'&eacute;tat du lecteur esclave, il faut, apr&egrave;s le diagnostic, s&eacute;lectionner l'esclave puis relire ce port :
+
+<p><center><table cols="2" border=1 width="60%">
+<tr><td width="10%"><b>Valeur</b></tD><td width="90%"><b>Lecteur 1 (Esclave)</b></td></tr>
+<tr><td>1</td><td>Pas d'erreur</td></tr>
+<tr><td>2<br>3<br>4<br>5</td><td>Erreur</td></tr>
+<tr><td colspan="2"><b>Signification apr&egrave;s la commande diagnostic (lecteur 1 (esclave) s&eacute;lectionn&eacute;)</b></td></tr>
+</table></center>
+
+<p><b>71h, F1h, 171h, 1F1h - Pr&eacute;compensation d'&eacute;criture, Sortie, 8 bits</b>
+
+<p>Ce port est pr&eacute;sent uniquement pour des raisons de compatibilit&eacute; avec les anciens disques mais les contr&ocirc;leurs IDE l'utilisent souvent pour des fonctions sp&eacute;cifiques selon les commandes.
+
+<p><b>72h, F2h, 172h, 1F2h - Nombre de secteurs, E/S, 8 bits</b>
+
+<p>Ce registre contient le nombre de secteurs &agrave; lire ou &agrave; &eacute;crire, 0 signifiant en r&eacute;alit&eacute; 256. &Agrave; la fin de l'op&eacute;ration de lecture ou d'&eacute;criture, il contient le nombre de secteurs restants (0 signifie que la commande a totalement aboutie). Il est parfois utilis&eacute; &agrave; d'autres fins par d'autres commandes.
+
+<p><b>73h, F3h, 173h, 1F3h - Secteur, E/S, 8 bits</b>
+
+<p>Ce registre contient le num&eacute;ro du 1e secteur concern&eacute; par chaque op&eacute;ration d'acc&egrave;s. Il peut &eacute;galement contenir les bits 0 &agrave; 7 de l'adresse LBA (cf. section <a href="#a_lba">V.1</a>)
+<br>Lorsqu'une op&eacute;ration est termin&eacute;, ce registre contient le num&eacute;ro du dernier secteur affect&eacute; par l'op&eacute;ration.
+
+<p><b>74h, F4h, 174h, 1F4h - Cylindre inf&eacute;rieur, E/S, 8 bits</b>
+
+<p>Ce registre contient les 8 bits de poids faibles du num&eacute;ro de cylindre pour l'op&eacute;ration. Il peut &eacute;galement contenir les bits 8 &agrave; 15 de l'adresse LBA.
+<br>Une fois l'op&eacute;ration achev&eacute;e, il contient les 8 bits de poids faibles du dernier cylindre affect&eacute;.
+
+<p><b>75h, F5h, 175h, 1F5h - Cyylindre sup&eacute;rieur, E/S, 8 bits</b>
+
+<p>Ce registre contient les 8 bits de poids forts du num&eacute;ro de cylindre pour l'op&eacute;ration. Certains contr&ocirc;leurs n'utilisent que les 2 bits de poids faibles de ce registre. Il est donc pr&eacute;f&eacute;rable de ne pas utiliser les autres. Il peut &eacute;galement contenir les bits 16 &agrave; 23 de l'adresse LBA (et dans ce cas, tout le registre est utilis&eacute;).
+<br>Une fois l'op&eacute;ration achev&eacute;e, il contient les 8 bits de poids forts du dernier cylindre affect&eacute;.
+
+<p><b>76h, F6h, 176h, 1F6h - Lecteur et t&ecirc;te, E/S, 8 bits</b>
+
+<p>Ce registre contient le lecteur s&eacute;lectionn&eacute; (bit 4, 0 = maitre, 1 = esclave) ainsi que le num&eacute;ro de la t&ecirc;te (bits 0 &agrave; 3) pour l'op&eacute;ration. Les bits 0 &agrave; 3 peuvent &eacute;galement contenir les bits 24 &agrave; 27 de l'adresse LBA.
+<br>Les bits 5 et 7 doivent &ecirc;tre positionn&eacute; &agrave; 1 tandis que le bit 6 indique le mode d'adressage (0 = CHS, 1 = LBA)
+
+<p><b>77h, F7h, 177h, 1F7h - &Eacute;tat, Entr&eacute;e, 8 bits</b>
+
+<p>Ce registre contient l'&eacute;tat du contr&ocirc;leur. Sa lecture provoque l'effacement de toute interruption en instance et constitue une confirmation tacite de celle-ci.
+
+<center><p><table cols=3 border=1 width="60%">
+<tr><td width="5%"><b>Bit</b></tD><td width="5%"><b>Valeur</b></tD><td width="90%"><b>Signification</b></tD></tr>
+<tr><td rowspan="2">7</td><td>0</td><td>Contr&ocirc;leur non occup&eacute;</td></tr>
+<tr><td>1</tD><td>Contr&ocirc;leur occup&eacute;</td></tr>
+<tr><td rowspan="2">6</td><td>0</tD><td>Lecteur s&eacute;lectionn&eacute; non pr&ecirc;t</td></tr>
+<tr><td>1</td><td>Lecteur pr&ecirc;t &agrave; r&eacute;pondre &agrave; une commande du contr&ocirc;leur</td></tr>
+<tr><td rowspan="2">5</td><td>0</td><td>Pas d'erreur d'&eacute;criture sur le lecteur s&eacute;lectionn&eacute;</td></tr>
+<tr><td>1</td><td>Erreur d'&eacute;criture</td></tr>
+<tr><td rowspan="2">4</td><td>0</td><td>Recherche en cours</td></tr>
+<tr><td>1</td><td>Recherche termin&eacute;e, les t&ecirc;tes sont &agrave; la position demand&eacute;e et pr&ecirc;tes &agrave; lire ou &eacute;crire</td></tr>
+<tr><td rowspan="2">3</td><td>0</td><td>Le contr&ocirc;leur n'est pas en attente d'un transfert par le port de donn&eacute;es</td></tr>
+<tr><td>1</td><td>Le contr&ocirc;leur est pr&ecirc;t &agrave; recevoir ou envoyer des mots (2 octets) sur le port de donn&eacute;es</td></tR>
+<tr><td rowspan="2">2</td><td>0</td><td>Les donn&eacute;es lues ne contenaient pas d'erreur qui ait pu &ecirc;tre corrig&eacute;e</td></tr>
+<tr><td>1</td><td>Les donn&eacute;es lues contenaient des erreurs qui ont pu &ecirc;tre r&eacute;par&eacute;es par le disque</td></tr>
+<tr><td>1</tD><td>&nbsp;</td><td>Ce bit n'est pas utilis&eacute; sur les lecteurs r&eacute;cents</td></tr>
+<tr><td rowspan="2">0</td><td>0</td><td>Pas d'erreur dans la commande pr&eacute;c&eacute;dente</td></tr>
+<tr><td>1</tD><tD>Erreur dans la commande pr&eacute;c&eacute;dente. La nature de l'erreur est indiqu&eacute;e dans le registre d'erreur</td></tr>
+</table>
+</center>
+
+<p><b>77h, F7h, 177h, 1F7h - Commande, Sortie, 8 bits</b>
+
+<p>C'est par ce port que sont envoy&eacute;es les commandes. L'envoi d'une commande se fait en dernier, apr&egrave;s avoir indiqu&eacute; tous les param&egrave;tres n&eacute;cessaires dans les autres ports.
+<br>Les commandes principales sont d&eacute;taill&eacute;es <a href="#p_commandes">plus bas</a>.
+
+<p><b>276h, 2F6h, 376h, 3F6h - &Eacute;tat, Entr&eacute;e, 8 bits</b>
+
+<p>Ce registre est identique au registre d'&eacute;tat 77h, F7h, 177h, 1F7h mais n'influe pas sur les interruptions en cours.
+
+<p><b>276h, 2F6h, 376h, 3F6h - Registre de contr&ocirc;le, Sortie, 8 bits</b>
+
+<p>Ce registre contr&ocirc;le l'initialisation du contr&ocirc;leur.
+
+<p><center><table cols="3" border=1 width="60%">
+<tr><td width="5%"><b>Bit</b></td><td width="5%"><b>Valeur</b></td><td width="90%"><b>Signification</b></td></tr>
+<tr><td>7<br>6<br>5<br>4</td><td>&nbsp;</td><td>Inutilis&eacute;s</td></tr>
+<tr><td rowspan="2">3</td><td>0</td><td>Lecteur de 1 &agrave; 8 t&ecirc;tes</td></tr>
+<tr><td>1</tD><td>Lecteur de plus de 8 t&ecirc;tes</td></tr>
+<tr><td rowspan="2">2</td><td>0</td><td>Fonctionnement normal</td></tr>
+<tr><td>1</tD><td>Initialisation</td></tr>
+<tr><td rowspan="2">1</td><td>0</td><td>Autorise les requ&ecirc;tes d'interruption (IRQ 14 pour le 1e contr&ocirc;leur, IRQ 15 pour le second, IRQ 11 pour le 3e et IRQ 10 pour le dernier)</td></tr>
+<tr><td>1</td><td>D&eacute;sactive la requ&ecirc;te d'interruption</td></tr>
+<tr><td>0</td><td>&nbsp;</td><tD>Inutilis&eacute;</td></tr>
+</table></center>
+
+<p>Pour initialiser le contr&ocirc;leur, il faut positionner le bit 2 &agrave; 1 pendant 4.8 microsecondes ou plus puis le vider.
+
+<p><b>277h, 2F7h, 377h, 3F7h - Registre d'adresses, Entr&eacute;e, 8 bits</b>
+
+<p>Ce port fournit des informations sur la t&ecirc;te et le lecteur s&eacute;lectionn&eacute; mais est assez peu utilis&eacute; car il n'est pas support&eacute; par tous les contr&ocirc;leurs et est de plus partag&eacute; avec le contr&ocirc;leur de disquettes.
+
+<h3><a href="#sommaire" name=p_commandes>III.3. Principales commandes</a></h3>
+
+<p>Le registre de commande peut, comme son nom l'indique, recevoir des commandes, lorsque, toutefois, l'&eacute;tat du contr&ocirc;leur, indiquer par le registre d'&eacute;tat, le lui permet.
+
+<p>Voici un bref descriptif des plus importantes :
+
+<p><b>00h - Aucune op&eacute;ration</b>
+
+<p>N'effectue aucune op&eacute;ration mais positionne le bit 2 du registre d'erreur (commande interrompue).
+
+<p><b>10h &agrave; 1F - Recalibrer</b>
+
+<p>Cette commande initialise le lecteur en positionnant la t&ecirc;te de lecture sur le cylindre 0. Cette commande tient compte de la valeur de la t&ecirc;te et du lecteur. Les autres registres sont ignor&eacute;s.
+
+<p><b>20h - Lire plusieurs secteurs, reessayer en cas d'erreur</b>
+
+<p>Cette commande permet de lire plusieurs secteurs. Si une erreur de donn&eacute;es survient, le contr&ocirc;leur recommence pour tenter d'obtenir des donn&eacute;es valides. Le nombre de tentatives d&eacute;pend du constructeur.
+<br>En cas de r&eacute;ussite, les donn&eacute;es peuvent &ecirc;tre lues depuis le registre de donn&eacute;es. Une interruption est d&eacute;clench&eacute;e au transfert de chaque secteur.
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>21h - Lire plusieurs secteurs, une seule tentative</b>
+
+<p>Cette commande est identique &agrave; la pr&eacute;c&eacute;dente mais, en cas d'erreur, le contr&ocirc;leur n'effectue pas de nouvelles tentatives.
+<br>En cas de r&eacute;ussite, les donn&eacute;es peuvent &ecirc;tre lues depuis le registre de donn&eacute;es. Une interruption est d&eacute;clench&eacute;e au transfert de chaque secteur.
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>30h - &Eacute;crire plusieurs secteurs, reessayer en cas d'erreur</b>
+
+<p>Cette commande permet d'&eacute;crire plusieurs secteurs. Si une erreur de donn&eacute;es survient, le contr&ocirc;leur recommence. Le nombre de tentatives d&eacute;pend du constructeur.
+<br>En cas de r&eacute;ussite, les donn&eacute;es peuvent &ecirc;tre &eacute;crites depuis le registre de donn&eacute;es. Une interruption est d&eacute;clench&eacute;e au transfert de chaque secteur.
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>31h - &Eacute;crire plusieurs secteurs, une seule tentative</b>
+
+<p>Cette commande est identique &agrave; la pr&eacute;c&eacute;dente mais, en cas d'erreur, le contr&ocirc;leur n'effectue pas de nouvelles tentatives.
+<br>En cas de r&eacute;ussite, les donn&eacute;es peuvent &ecirc;tre &eacute;crites depuis le registre de donn&eacute;es. Une interruption est d&eacute;clench&eacute;e au transfert de chaque secteur.
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>70h &agrave; 7Fh - Recherche</b>
+
+<p>Cette commande recherche l'emplacement indiqu&eacute; par les informations CHS ou LBA, puis y positionne la t&ecirc;te de lecture. Les commandes n&eacute;cessitant l'acc&egrave;s &agrave; un point du disque, comme la lecture ou l'&eacute;criture, effectue implicitement cette recherche. Cette fonction ne doit donc pas n&eacute;cessairement &ecirc;tre appel&eacute;e avant les autres commandes.
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>90h - Diagnostic</b>
+
+<p>Cette commande effectue un diagnostic. Le lecteur 0 doit &ecirc;tre s&eacute;lectionn&eacute; mais le diagnostic s'applique aux 2 lecteurs.
+
+<p><b>ECh - Obtenir les informations sur le disque</b>
+
+<p>Cette commande renvoie 256 mots, c'est-&agrave;-dire un secteur, par le registre de donn&eacute;es contenant diff&eacute;rentes informations sur le lecteur s&eacute;lectionn&eacute;. Voici les quelques une de ces informations. Pour plus de d&eacute;tails, reportez-vous aux sp&eacute;cifications officielles.
+
+<p><table cols=3>
+<tr><td width="5%"><b>Indice</b></tD><td width="5%"><b>Taille</b></td><td width="90%"><b>Signification</b></tD></tr>
+<tr><td>2h</tD><td>mot</td><td>Nombre total de cylindres logiques ou 16383 si le double-mot &agrave; l'indice 78h d&eacute;passe 16515072</tD></tr>
+<tR><td>6h</td><td>mot</td><td>Nombre total de t&ecirc;tes logiques ou 16 si le double-mot &agrave; l'indice 78h d&eacute;passe 16515072</tD></tr>
+<tr><td>Ch</td><td>mot</td><td>Nombre total de secteurs logiques par piste logique ou 63 si le double-mot &agrave; l'indice 78h d&eacute;passe 16515072</tD></tr>
+<tr><td>14h</td><td>10 mots</tD><td>Num&eacute;ro de s&eacute;rie</td></tr>
+<tr><td>36h</tD><td>20 mots</td><td>Mod&egrave;le</td></tr>
+<tr><td>78h</td><td>double-mot</td><td>Nombre total de secteurs adressables en mode LBA</td></tr>
+<tr><td>A0h</td><td>mot</td><td>Num&eacute;ro majeur de r&eacute;vision des sp&eacute;cifications ATA</td></tr>
+<tr><td>A2h</td><td>mot</td><td>Num&eacute;ro mineur de r&eacute;vision des sp&eacute;cifications ATA</td></tr>
+</table>
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est pr&eacute;sent.</i>
+
+<p><b>A1h - Obtenir les informations sur le disque (Jeu d'instructions <i>Packet</i>)</b>
+
+<p>Cette commande est similaire &agrave; la commande pr&eacute;c&eacute;dente mais est r&eacute;serv&eacute;e au jeu d'instructions <i>Packet</i>. Les informations renvoy&eacute;es sont toutefois diff&eacute;rentes. Pour une description compl&egrave;te, reportez-vous aux sp&eacute;cifications officielles.
+
+<p><table cols=3>
+<tr><td width="5%"><b>Indice</b></tD><td width="5%"><b>Taille</b></td><td width="90%"><b>Signification</b></tD></tr>
+<tr><td>14h</td><td>10 mots</tD><td>Num&eacute;ro de s&eacute;rie</td></tr>
+<tr><td>36h</tD><td>20 mots</td><td>Mod&egrave;le</td></tr>
+<tr><td>A0h</td><td>mot</td><td>Num&eacute;ro majeur de r&eacute;vision des sp&eacute;cifications ATA</td></tr>
+<tr><td>A2h</td><td>mot</td><td>Num&eacute;ro mineur de r&eacute;vision des sp&eacute;cifications ATA</td></tr>
+</table>
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est absent.</i>
+
+<p><b>A0h - Envoyer une commande <i>Packet</i></b>
+
+<p>Cette commande permet d'envoyer une commande <i>Packet</i> au contr&ocirc;leur.
+
+<p>Voici comment utiliser cette commande :
+
+<p><b>Lancer la commande</b>
+<br><table cols=2 width=100% border=0>
+<tr><td>Features (0x1f1, 0x171, 0xf1, 0x71)</td><td>0</td></tr>
+<tr><td>Sector Count (0x1f2, 0x172, 0xf2, 0x72)</td><td>0</td></tr>
+<tR><tD>Sector Number (0x1f3, 0x173, 0xf3, 0x73)</td><td>0</tD></tr>
+<tr><tD>Byte Low (0x1f4, 0x174, 0xf4, 0x74)</td><tD>(1)</td></tr>
+<tr><tD>Byte High (0x1f5, 0x175, 0xf5, 0x75)</td><tD>(1)</td></tr>
+<tr><tD>Head and Disk (0x1f6, 0x176, 0xf6, 0x76)</td><tD>(2)</td></tr>
+<tr><tD>Command (0x1f7, 0x177, 0xf7, 0x77)</td><tD>0xa0</td></tr>
+</table>
+
+<p><b>(1)</b> Ces deux registres contiennent le nombre maximum d'octet qui vont être transférés (ex. 4096 : Byte High = 0x10 ; Byte Low = 0)
+<br><b>(2)</b> Ce registre s'utilise comme pour toutes les commandes.
+
+<p>Lorsque le contr&ocirc;leur est pr&ecirc:t &agrave; recevoir la commande, Status & 0x8 == 8 (DRQ bit - Data ReQuest) et Interrupt Reason (Sector Count) & 0x7 == 1 (REL=0; I/O=0 ; C/D=1). Le paquet de commande peut alors &ecirc;tre envoy&eacute; par le port de donn&eacute;es (0x1f0, 0x170, 0xf0, 0x70).
+
+<p>Lorsque le contr&ocirc;leur est pr&ecirc;t &agrave; envoyer ou recevoir des donn&eacute;es (dans le cas d'une commande n&eacute;cessitant un transfert), Status & 0x8 == 8 (DRQ bit - Data ReQuest) et Interrupt Reason (Sector Count) & 0x7 == 0 (REL=0; I/O=0 ; C/D=0) si le contr&ocirc;leur re&ccedil;oit, ou Status & 0x8 == 8 (DRQ bit - Data ReQuest) et Interrupt Reason (Sector Count) & 0x7 == 2 (REL=0; I/O=1 ; C/D=0) si le contr&ocirc;leur envoie.
+
+<p>Enfin, Interrupt Reason (Sector Count) & 0x7 == 3 (REL=0; I/O=1 ; C/D=1) pour indiquer que la commande est termin&eacute;e (avec ou sans erreur). Dans le cas d'une erreur, le registre d'erreur contient dans ses 4 bits de poids forts le numéro Sense Key de l'erreur. L'erreur compl&egrave;te peut &ecirc;tre connue gr&acirc;ce &agrave; la commande Request Sense (non trait&eacute;e dans ce document).
+
+<p><i>Commande interdite si le jeu de commandes </i>Packet<i> est absent.</i>
+
+<h2><a href="#sommaire" name=op>IV. Quelques op&eacute;rations courantes</a></h2>
+
+<p>Dans cette section, tous les codes sont &eacute;crits en assembleur AT&T (par exemple Gnu ASsembler). Ils sont susceptibles de contenir quelques erreurs car ils n'ont pas &eacute;t&eacute; test&eacute; tels qu'ils sont pr&eacute;sent&eacute;s ici (puisqu'ils ne sont pas complets). Ils constituent n&eacute;anmoins une bonne base.
+
+<h3><a href="#sommaire" name=o_detectc>IV.1. D&eacute;tecter les contr&ocirc;leurs</a></h3>
+
+<p>Pour savoir si un contr&ocirc;leur est pr&eacute;sent, il faut tester ces ports. Sur certains syst&egrave;me, un port non attribu&eacute; renverra toujours 0xff. Malheureusement, un port attribu&eacute; peut aussi renvoyer 0xff et sur certains syst&egrave;mes, la valeur est al&eacute;atoire. V&eacute;rifier cette valeur n'est donc pas un moyen s&ucirc;r de d&eacute;tecter la pr&eacute;sence d'un contr&ocirc;leur.
+<p>Une autre m&eacute;thode est de modifier la valeur d'un port en lecture/&eacute;criture et de v&eacute;rifier ensuite que la modification a &eacute;t&eacute; effectu&eacute;e.
+<p>Le registre de lecteur et de t&ecirc;te est en E/S. Aussi, nous pouvons l'utiliser pour tenter de d&eacute;tecter un contr&ocirc;leur :
+<p><ul>
+<li>Nous commencons par lire le disque actuellement s&eacute;lectionn&eacute; :
+    <p><b>movw</b> <font color=#0000ff>$PORT_HEAD_AND_DISK</font>, <font color=#ff0000>%dx</font>  <font color=#006600>// 0x1f6, 0x176, 0xf6 ou 0x76 selon le contr&ocirc;leur test&eacute;</font>
+    <br><b>inb</b> <font color=#ff0000>%dx</font>, <font color=#ff0000>%al</font>
+    <br><b>movb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%bl</font>
+    <br><b>andb</b> <font color=#0000ff>$0x10</font>, <font color=#ff0000>%bl</font>
+    <br><b>shrb</b> <font color=#0000ff>$4</font>, <font color=#ff0000>%bl</font>
+    <p>AL contient maintenant 0 (Maitre) ou 1 (Esclave)
+    <br>&nbsp;
+</li>
+<li>Nous s&eacute;lectionnons l'autre disque :
+    <p><b>cmpb</b> <font color=#0000ff>$0</font>, <font color=#ff0000>%bl</font>
+    <br><b>jz</b> <i>setslave</i>
+    <br><b>jmp</b> <i>setmaster</i>
+    <br><i>setmaster:</i>
+    <br><b>andb</b> <font color=#0000ff>$0xef</font>, <font color=#ff0000>%al</font>
+    <br><b>jmp</b> <i>set</i>
+    <br><i>setslave:</i>
+    <br><b>orb</b> <font color=#0000ff>$0x10</font>, <font color=#ff0000>%al</font>
+    <br><i>set:</i>
+    <br><b>outb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%dx</font>
+    <br>&nbsp;
+</li>
+<li>Nous relisons alors le disque actuellement s&eacute;lectionn&eacute; :
+    <p><b>inb</b> <font color=#ff0000>%dx</font>, <font color=#ff0000>%al</font>
+    <br><b>andb</b> <font color=#0000ff>$0x10</font>, <font color=#ff0000>%al</font>
+    <br><b>shrb</b> <font color=#0000ff>$4</font>, <font color=#ff0000>%al</font>
+    <p>AL contient maintenant 0 (Maitre) ou 1 (Esclave)
+    <br>&nbsp;
+</li>
+<li>Enfin, nous comparons le disque s&eacute;lectionn&eacute; avant (BL) et maintenant (AL) :
+    <p><b>cmpb</b> <font color=#ff0000>%bl</font>, <font color=#ff0000>%al</font>
+    <br><b>jz</b> <i>no_adapter</i>
+    <br><b>jmp</b> <i>adapter_found</i>
+    <br><i>no_adapter:</i>  <font color=#006600>// contr&ocirc;leur absent</font>
+
+    <p><i>adapter_found:</i> <font color=#006600>// contr&ocirc;leur pr&eacute;sent</font>
+</li>
+
+</ul>
+
+<h3><a href="#sommaire" name=o_detectd>IV.2. D&eacute;tecter les disques</a></h3>
+
+<p>La d&eacute;tection des disques install&eacute;s sur un contr&ocirc;leur est &agrave; mon sens plus difficile.
+<br>La m&eacute;thode la plus s&ucirc;re &agrave; mon avis est d'envoyer une commande au disque et d'attendre. Si la r&eacute;ponse tarde trop, on suppose que le disque test&eacute; n'existe pas. Cette m&eacute;thode n'est s&ucirc;r que si l'attente est suffisamment grande. Il faut noter que m&ecirc;me le BIOS peut mettre quelques secondes &agrave; d&eacute;tecter l'absence d'un disque donc cette m&eacute;thode n'est peut-&ecirc;tre pas si mauvaise. Il faut faire attention &agrave; la commande que l'on choisit. En effet, selon que l'on veut d&eacute;tecter uniquement les disques ATA, ATAPI ou les deux, il faut choisir une commandes qui corresponde. En choisissant la commande 0xec et en attendant que le contr&ocirc;leur soit pr&egrave;t &agrave; recevoir des donn&eacute;es, les disques ATAPI r&eacute;pondront mais ne seront jamais pr&ecirc;ts pour un transfert. Le programme d&eacute;duira donc que le disque n'existe pas.
+<p>En fait, avec cette m&eacute;thode, il faut bien choisir la commande &agrave; envoyer et le r&eacute;sultat qu'on en attend.
+
+<p><b>movw</b> <font color=#0000ff>$PORT_HEAD_AND_DISK</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f6, 0x176, 0xf6 ou 0x76</font>
+<br><b>movb</b> <font color=#0000ff>$HEAD_AND_DISK</font>, <font color=#ff0000>%al</font> <font color=#006600>// 0xa0 pour tester le maitre, 0xb0 pour l'esclave</font>
+<br><b>outb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%dx</font>
+<br><b>movw</b> <font color=#0000ff>$PORT_COMMAND</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f7, 0x177, 0xf7 ou 0x77</font>
+<br><b>movb</b> <font color=#0000ff>$COMMAND</font>, <font color=#ff0000>%al</font> <font color=#006600>// Commande &agrave; utiliser (personnellement, j'utilise la commande 0xec, ce qui me permet du m&ecirc;me coup de lire les informations du disque s'il est pr&eacute;sent, dans ce cas, il ne faut pas oublier d'ajouter le code n&eacute;cessaire &agrave; la r&eacute;cup&eacute;ration de ces informations)</font>
+<br><b>outb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%dx</font>
+
+<p><b>movl</b> <font color=#0000ff>$TIMEOUT</font>, <font color=#ff0000>%ecx</font> <font color=#006600>// Nombre de tentatives de lecture de l'&eacute;tat du contr&ocirc;leur</font>
+<br><b>movw</b> <font color=#0000ff>$PORT_STAT</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f7, 0x177, 0xf7, 0x77</font>
+<bR><i>detect_disk_loop:</i>
+<br><b>inb</b> <font color=#ff0000>%dx</font>, <font color=#ff0000>%al</font>
+<br><b>andb</b> <font color=#0000ff>$0xfe</font>, <font color=#ff0000>%al</font> <font color=#006600>// Contr&ocirc;leur et disque</font>
+<br><b>cmpb</b> <font color=#0000ff>$0x50</font>, <font color=#ff0000>%al</font> <font color=#006600>// pr&ecirc;ts ?</font>
+<br><b>je</b> <i>disque_present</i>
+<br><b>loop</b> <i>detect_disk_loop</i>
+<br><i>disque_absent:</i>
+
+<p><i>disque_present:</i>
+
+<p>Une autre m&eacute;thode, plus simple &agrave; mettre en oeuvre et plus rapide, mais moins s&ucirc;re, est de tenter de d&eacute;tecter les protocoles utilis&eacute;s (voir <a href=#o_atapi>D&eacute;tecter le protocole</a>) par les disques. Cette m&eacute;thode est moins efficace car si un contr&ocirc;leur n'existe pas, les valeurs que les ports peuvent retourner d&eacute;pendent des machines et peuvent &ecirc;tre totalement al&eacute;atoire, et donc, pourquoi pas, correspondre aux valeurs du standard sans qu'aucun disque ne soit pr&eacute;sent.
+<br>De m&ecirc;me, si un contr&ocirc;leur existe mais n'est branch&eacute; qu'&agrave; un seul disque, les valeurs seront les m&ecirc;mes quelques soit le disque s&eacute;lectionn&eacute;, comme s'il y avait deux disques.
+
+<p>L'id&eacute;al &agrave; mon avis est de commencer par la deuxi&egrave;me m&eacute;thode puis, pour les disques d&eacute;tect&eacute;, v&eacute;rifier avec la premi&egrave;re. Dans la plupart des cas, le disque existe vraiment et cette v&eacute;rification est assez rapide.
+
+<h3><a href="#sommaire" name=o_infos>IV.3. Obtenir quelques informations sur un disque</a></h3>
+
+<p>La commande 0xec permet d'obtenir des informations sur le disque ATA s&eacute;lectionn&eacute;. Cette commande n'a besoin que d'une information : le disque s&eacute;lectionn&eacute;. En retour, elle envoie 256 mots (double-octets) sur le registre de donn&eacute;es (0x1f0, 0x170, 0xf0 ou 0x70).
+<bR>Pour les disque ATAPI, il faut utiliser la commande 0xa1 et ne pas oublier que les valeurs retourn&eacute;es n'ont pas toutes la m&ecirc;me signification.
+
+<p><b>movw</b> <font color=#0000ff>$PORT_HEAD_AND_DISK</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f6, 0x176, 0xf6 ou 0x76</font>
+<br><b>movb</b> <font color=#0000ff>$HEAD_AND_DISK</font>, <font color=#ff0000>%al</font> <font color=#006600>// 0xa0 ou 0xb0</font>
+<br><b>outb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%dx</font>
+<br><b>movw</b> <font color=#0000ff>$PORT_COMMAND</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f7, 0x177, 0xf7 ou 0x77</font>
+<br><b>movb</b> <font color=#0000ff>$0xec</font>, <font color=#ff0000>%al</font> <font color=#006600>// ou 0xa1 pour les disques ATAPI</font>
+<br><b>outb</b> <font color=#ff0000>%al</font>, <font color=#ff0000>%dx</font>
+
+<p><b>movl</b> <font color=#0000ff>$TIMEOUT</font>, <font color=#ff0000>%ecx</font> <font color=#006600>// Nombre de tentatives de lecture de l'&eacute;tat du contr&ocirc;leur</font>
+<br><b>movw</b> <font color=#0000ff>$PORT_STAT</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f7, 0x177, 0xf7, 0x77</font>
+<bR><i>wait_loop:</i>
+<br><b>inb</b> <font color=#ff0000>%dx</font>, <font color=#ff0000>%al</font>
+<br><b>andb</b> <font color=#0000ff>$0xd8</font>, <font color=#ff0000>%al</font> <font color=#006600>// Contr&ocirc;leur et disque</font>
+<br><b>cmpb</b> <font color=#0000ff>$0x58</font>, <font color=#ff0000>%al</font> <font color=#006600>// pr&ecirc;ts &agrave; transf&eacute;rer ?</font>
+<br><b>je</b> <i>transf</i>
+<br><b>loop</b> <i>wait_loop</i>
+<br><i>timeout:</i> <font color=#006600>// Le disque n'est pas pr&ecirc;t</font>
+
+<p><i>transf:</i> <font color=#006600>// effectuer le transfert</font>
+<br><b>movl</b> <font color=#0000ff>$OFFSET_BUFFER</font>, <font color=#ff0000>%edi</font>
+<br><b>movw</b> <font color=#0000ff>$SEGMENT_BUFFER</font>, <font color=#ff0000>%es</font>
+<br><b>movl</b> <font color=#0000ff>0x100</font>, <font color=#ff0000>%ecx</font>
+<br><b>movw</b> <font color=#0000ff>$PORT_DATA</font>, <font color=#ff0000>%dx</font> <font color=#006600>// 0x1f0, 0x170, 0xf0 ou 0x70</font>
+<br><b>rep</b> <b>insw</b>
+
+<p>Il ne reste plus ici qu'&agrave; interpr&eacute;ter les valeurs lues.
+
+<h3><a href="#sommaire" name=o_reset>IV.4. Initialiser un contr&ocirc;leur</a></h3>
+
+<p>Pour cela, je ne propose pas de code mais seulement des explications.
+
+<p>Pour initialiser un contr&ocirc;leur, il faut utiliser le registre de contr&ocirc;le (0x3f6, 0x376, 0x2f6 ou 0x276 en &eacute;criture seule).
+<br>Il faut en effet positionner le bit 2 (le 3e bit en partant de la droite) pendant 4.8 microsecondes ou plus, puis le vider.
+<br>La proc&eacute;dure n'a donc rien de complexe en soit mais l'attente doit &ecirc;tre programm&eacute; selon le syst&egrave;me d'exploitation utilis&eacute; (et donc les fonctions d'API disponibles).
+
+<p>Une question qu'il est judicieux de se poser est : &quot;Pourquoi initialiser ?&quot. En effet, il est possible, du moins d'apr&egrave;s mes constatations, d'acc&egrave;der aux disques m&ecirc;me sans initialisation. En fait, cette op&eacute;ration permet ensuite de savoir si les disques sont des disques ATA ou ATAPI (<a href=#o_atapi>D&eacute;tecter le protocole</a>).
+
+<h3><a href="#sommaire" name=o_read>IV.5. Lire</A></h3>
+
+<p><b>Depuis un disque ATA</b>
+
+<p>La lecture fonctionne de la m&ecirc;me mani&egrave;re que la lecture d'informations concernant le disque (voir <a href="#o_infos">plus haut</a>) mais n'utilise pas les m&ecirc;mes param&egrave;tres d'entr&eacute;e. Voici ceux concernant la lecture :
+
+<p><center><table cols=2 border=1 width=60%>
+<tr><td>0x1f2, 0x172, 0xf2 ou 0x72</tD><td>Nombre de secteurs &agrave; lire</td></tr>
+<tr><td>0x1f3, 0x173, 0xf3 ou 0x73</td><td>Num&eacute;ro de secteur du 1e secteur &agrave; transf&eacute;rer</td></tr>
+<tr><td>0x1f4, 0x174, 0xf4 ou 0x74</td><td>Octet inf&eacute;rieur du num&eacute;ro de cylindre du 1e secteur &agrave; transf&eacute;rer</td></tr>
+<tr><td>0x1f5, 0x175, 0xf5 ou 0x75</td><td>Octet sup&eacute;rieur du num&eacute;ro de cylindre du 1e secteur &agrave; transf&eacute;rer</td></tr>
+<tR><td>0x1f6, 0x176, 0xf6 ou 0x76</td><td>Disque et num&eacute;ro de t&ecirc;te du 1e secteur &agrave; transf&eacute;rer</td></tr>
+<tr><td><b>Num&eacute;ro de commande</td><td>0x20</td></tr>
+</table></center>
+
+<p>En sortie, le disque envoie sur le port de donn&eacute;e n*256 mots o&ugrave; n est le nombre de secteur &agrave; lire.
+
+<p><b>Depuis un disque ATAPI</b>
+
+<p>Il faut utiliser la commande Packet suivante :
+<br>Octet 1. 0xA8
+<br>Octet 2. 0
+<br>Octets 3-6. Adresse LBA du 1e secteur &agrave; lire
+<br>Octets 7-10. Nombre de secteurs.
+<br>Octet 11. 0
+<br>Octet 12. 0
+
+<p>Le contr&ocirc;leur renvoie les donn&eacute;es lues ((2048 * nombre de secteurs) octets).
+
+<p><i>Note</i> : L'adresse est le nombre de secteur est indiqué avec la norme Big Endian : 
+<br>Octet 3 = ( lba &gt;&gt; 24 ) & 0xff;
+<br>Octet 4 = ( lba &gt;&gt; 16 ) & 0xff;
+<br>Octet 5 = ( lba &gt;&gt; 8 ) & 0xff;
+<br>Octet 6 = lba & 0xff;
+<br>Octet 7 = ( count &gt;&gt; 24 ) & 0xff;
+<br>Octet 8 = ( count &gt;&gt; 16 ) & 0xff;
+<br>Octet 9 = ( count &gt;&gt; 8 ) & 0xff;
+<br>Octet 10 = count & 0xff;
+
+<h3><a href="#sommaire" name=o_write>IV.6. &Eacute;crire</a></h3>
+
+<p><b>Vers un disque ATA</b>
+
+<p>L'&eacute;criture se passe exactement de la m&ecirc;me mani&egrave;re que la lecture si ce n'est que la commande est 0x30 et que les donn&eacute;es ne sont pas transf&eacute;r&eacute;es du disque &agrave; la m&eacute;moire mais de la m&eacute;moire au disque.
+
+<p><b>Vers un disque ATAPI</b>
+
+<p><i>Dans le cas d'un CD-ROM, cette commande ne peut &ecirc;tre utilis&eacute;e que pour un graveur. N'ayant jamais impl&eacute;ment&eacute; cette commande, je pr&eacute;f&egrave;re ne pas la d&eacute;tailler.</i>
+
+<h3><a href="#sommaire" name=o_erreur>IV.7. Prise en charge des erreurs</a></h3>
+
+<p>Une bonne prise en charge des erreurs est &eacute;galement un point important pour un pilote fonctionnel.
+<p>Pour cela, il faut lire le port d'erreur (0x1f1, 0x171, 0xf1 ou 0x71) apr&egrave;s chaque commande. Le contenu de ce port est d&eacute;crit <a href="#reg_err">plus haut</a>. La documentation officielle est plus exhaustive sur ce port, dont la valeur peut parfois d&eacute;pendre de la derni&egrave;re commande.
+
+<p>Pour les commandes Packet, il faut utiliser la commande (Packet) Request Sense pour connaitre la valeur de la derni&egrave;re erreur (cette commande n'est pas trait&eacute;e dans ce document).
+
+<h3><a href="#sommaire" name=o_atapi>IV.8. D&eacute;tecter le protocole</a></h3>
+
+<p>Les disques ATA et ATAPI fonctionnant diff&eacute;remment, il est important de pourvoir d&eacute;tecter le protocole utilis&eacute; par un disque. Cela se r&eacute;alise de la mani&egrave;re suivante :
+
+<ol>
+<li>En premier lieu, il faut initialiser le contr&ocirc;leur (<a href=#o_reset>Initialiser le contr&ocirc;leur</a>)</li>
+<li>Ensuite, il faut s&eacute;lectionner le disque dont on veut conna&icirc;tre le protocole</li>
+<li>Puis il faut lire les registres Sector Count et Sector Number</li>
+<li>Si ces registres valent tous les deux 1, il faut lire les registres Cylinder Low et Cylinder High.</li>
+<li>Si ces registres valent tous les deux 0, le disque est ATA, si ces resistres valent respectivement 0x14 et 0xeb, le disque est ATAPI</li>
+</ol>
+
+<p>Apr&egrave;s avoir obtenu le protocole d'un disque, on peut s&eacute;lectionner l'autre disque pour en d&eacute;terminer le protocole sans avoir &agrave; r&eacute;initialiser (tant que les valeurs n'ont pas &eacute;t&eacute; modifi&eacute;es).
+
+<p>Attention, toutefois, si un seul disque se trouve sur un contr&ocirc;leur, j'ai pu constat&eacute; que les valeurs pour le disque qui n'existe pas peuvent &ecirc;tre &eacute;ronn&eacute;e. Cette m&eacute;thode ne permet donc pas de d&eacute;tecter un disque.
+
+<h3><a href="#sommaire" name=o_taille>IV.9. D&eacute;terminer la capacit&eacute;</a></h3>
+
+<p>Dans le cas d'un disque dur ATA, cette donn&eacute;e, fixe, est fournie par l'instruction <i>Identify Device</i> (ECh) sous la forme du nombre de secteurs adressable en mode LBA ou, dans le cas d'un disque ne supportant pas ce mode, de la structure CHS logique du disque.
+
+<p>Au contraire, dans le cas d'un lecteur de CD-ROM ATAPI, dont le m&eacute;dia est amovible, la capacit&eacute; varie selon le m&eacute;dia actuellement dans le lecteur. Il existe donc une commande Packet <i>Read Capacity</i> qui donne le num&eacute;ro logique du dernier bloc de donn&eacute;. Cette commande n'indique pas la capacit&eacute; totale du CD, mais la quantit&eacute; de donn&eacute;es press&eacute;es (CD-ROM) ou grav&eacute;es (CD-R/RW).
+
+<p>Voici la structure de cette commande :
+
+<p><center><table cols=2 border=1 width=60%>
+<tr><td width=5%>0</td><td width=95% align=center>Code op&eacute;ration : 25h</td>
+<tr><td width=5%>1</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>2</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>3</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>4</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>5</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>6</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>7</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>8</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>9</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>10</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>11</td><td width=95% align=center>0h</td></tr>
+</table>
+</center>
+
+<p>La commande renvoie 8 octets de r&eacute;ponse :
+
+<p><center><table cols=2 width=60% border=1>
+<tr><td width=5%>0</td><td rowspan=4 width=95% align=center>
+ <table cols=1 border=0>
+ <tr><td align=left>Most Significant Byte</td></tr>
+ <tr><td align=center>Adresse LBA du dernier secteur adressable</td></tr>
+ <tr><td align=right>Least Significant Byte</td></tr>
+ </table>
+</td></tr>
+<tr><td width=5%>1</tD></tr>
+<tr><td width=5%>2</tD></tr>
+<tr><td width=5%>3</tD></tr>
+<tr><td width=5%>4</td><td rowspan=4 width=95% align=center>
+ <table cols=1 border=0>
+ <tr><td align=left>Most Significant Byte</td></tr>
+ <tr><td align=center>Nombre d'octet dans un secteur (normalement 2048)</td></tr>
+ <tr><td align=right>Least Significant Byte</td></tr>
+ </table>
+</td></tr>
+<tr><td width=5%>5</tD></tr>
+<tr><td width=5%>6</tD></tr>
+<tr><td width=5%>7</tD></tr>
+</table></center>
+
+<h3><a href="#sommaire" name=o_lock>IV.10. Interdire ou autoriser le retrait d'un m&eacute;dia</a></h3>
+
+<p><b>ATAPI</b>
+
+<p>Cette op&eacute;ration se r&eacute;alise gr&acirc;ce &agrave; la commande Prevent Allow Medium Removal d&eacute;finies dans les SPC-2 (SCSI Primary Commands).
+
+<p>La structure de cette commande est la suivante :
+
+<p><center><table cols=2 border=1 width=60%>
+<tr><td width=5%>0</td><td width=95% align=center>Code op&eacute;ration : 1eh</td>
+<tr><td width=5%>1</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>2</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>3</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>4</td><td width=95% align=center>0h pour autoriser et 3h pour interdire</td></tr>
+<tr><td width=5%>5</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>6</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>7</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>8</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>9</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>10</td><td width=95% align=center>0h</td></tr>
+<tr><td width=5%>11</td><td width=95% align=center>0h</td></tr>
+</table></Center>
+
+<p>Cette commande n'envoie pas de r&eacute;ponse.
+
+<h2><a href="#sommaire" name=avancees>V. Fonctions plus avanc&eacute;es</a></h2>
+
+<h3><a href="#sommaire" name=a_lba>V.1. LBA - <i>Logical Block Address</i></a></h3>
+
+<h4><a href="#sommaire" name="al_present">V.1.1. Pr&eacute;sentation</a></h4>
+
+<p>Le mode CHS permet d'adresser un secteur du disque en indiquant son num&eacute;ro de secteur, le num&eacute;ro du cylindre o&ugrave; il se trouve ainsi que le num&eacute;ro de la t&ecirc;te. Malheureusement, ce mode ne permet d'adresser que 1024 cylindres, 63 secteurs et 256 t&ecirc;tes soit 1024*63*256*512=8455716864 octets soit un peu moins de 8 Go, ce qui est peu de nos jours (quoique certains disques supportent des adresses CHS sup&eacute;rieures &agrave; cette limite).
+<br>Au contraire, le mode LBA utilise une adresse logique sur 28 bits : le 1e secteur a l'adresse 0, le 63e l'adresse 62, le 1e secteur du 2e cylindre l'adresse 63 (si il y a 63 secteurs par cylindres) et ainsi de suite. Le mode LBA permet donc d'adresser 2^28*512=137438953472 octets soit 128 Go.
+
+<h4><a href="#sommaire" name="al_util">V.1.2. Utilisation, diff&eacute;rences par rapport au mode CHS</a></h4>
+
+<p>L'utilisation du mode LBA n'est pas beaucoup plus compliqu&eacute;e que le mode CHS, les diff&eacute;rences peuvent &ecirc;tre r&eacute;sum&eacute;es de la mani&egrave;re suivante :
+
+<p><table cols=3>
+<tr><td><b>Registre</b></tD><td><b>Mode CHS</b></td><td><b>Mode LBA</b></td></tr>
+<tr><td>Registre de lecteur et t&ecirc;te, bit 6</tD><td>0</tD><td>1</td></tr>
+<tr><td>Num&eacute;ro de secteur</td><td>Num&eacute;ro du secteur</td><tD>Bits 0 &agrave; 7 de l'adresse LBA</td></tr>
+<tr><td>Num&eacute;ro de cylindre, octet de poids faible</b></tD><td>Num&eacute;ro de cylindre, octet de poids faible</tD><td>Bits 8 &agrave; 15 de l'adresse LBA</td></tr>
+<tr><td>Num&eacute;ro de cylindre, octet de poids fort</b></tD><td>Num&eacute;ro de cylindre, octet de poids fort</tD><td>Bits 16 &agrave; 23 de l'adresse LBA</td></tr>
+<tr><td>Registre de lecteur et t&ecirc;te, bits 0 &agrave; 3</td><td>Num&eacute;ro de t&ecirc;te</tD><td>Bits 24 &agrave; 27 de l'adresse LBA</td></tr>
+</table>
+
+<p>Pour le reste, tout est identique.
+
+<h4><a href="#sommaire" name="al_util">V.1.3. Conversion d'une adresse CHS en adresse LBA et inversement</a></h4>
+
+<p>adresse logique = (numero de secteur - 1) + (numero de t&ecirc;te * nombre de secteurs par cylindre) + (numero de cylindre * nombre de secteurs par cylindre * nombre de t&ecirc;tes)
+
+<p>secteur CHS = entier(1 + reste de (adresse logique / nombre de secteurs par pistes))
+<br>t&ecirc;te CHS = entier(reste de ((adresse logique / nombre de secteurs par pistes) / nombre de t&ecirc;tes))
+<br>piste CHS = entier(adresse logique / (nombre de secteurs par cylindre * nombre de faces))
+
+<p>Consid&eacute;rons lba l'adresse logique, c le cylindre, h la t&ecirc;te, s le secteur, H le nombre de t&ecirc;tes et S le nombre de secteurs par cylindre, voici les m&ecirc;mes formules dans une syntaxe de style C (types entiers) :
+
+<p>lba = (s - 1) + (h * S) + (c * S * H);
+<br>s = 1 + (lba % S);
+<br>h = (lba / S) % H;
+<br>c = lba / (S * H);
+
+<h2><a href="#sommaire" name=conclu>VI. Conclusion</a></h2>
+
+<p>Les informations contenues dans ce document sont directement inspir&eacute;es des sp&eacute;cifications officielles, mais sont tr&egrave;s simplifi&eacute;es. La section <a href=#biblio>Bibliographie et liens</a> vous permettra d'approfondir votre connaissance des standard ATA/ATAPI.
+
+<h2><a href="#sommaire" name=sources>A. Sources</a></h2>
+
+<ul>
+<li>Programmation d'ATA/ATAPI
+<ul>
+ <li>PC Programmation Syst&egrave;me, Franck van Gilluwe, CampusPress, 1999, ISBN 2-7440-0559-2, traduit de l'am&eacute;ricain The Undocumented PC, Second Edition
+ </li>
+
+ <li>IDE - Hardware Reference & Information Document, Alex T. Ivopol, <a href="mailto:ivopola@emco.co.nz">ivopola@emco.co.nz</a>, 1994
+ </li>
+
+ <li>ATA-ATAPI.com, un site enti&egrave;rement d&eacute;di&eacute; &agrave; ce standard par l'un des membres du T13 qui les con&ccedil;oit : <a href="http://www.ata-atapi.com">www.ata-atapi.com</a>
+ </li>
+</ul></li>
+<li>Codes sources
+<ul>
+ <li>Developing Your Own 32 bits Computer Operating System, Richard A. Burgess, MacMillan, 1995
+ </li>
+
+ <li>ATADRVR v14C, Hale Landis, le webmaster de ATA-ATAPI.com, <a href="mailto:hlandis@ata-atapi.com">hlandis@ata-atapi.com</a>, <a href="http://www.ata-atapi.com">www.ata-atapi.com</a>
+ </li>
+</ul></li>
+
+<li>LBA
+<ul>
+ <li>Revue LOGIN: 70, Architecture d'un OS : le syst&egrave;me de fichiers, Vincent Perdereau, <a href="mailto:vincent.perdereau@lemel.fr">vincent.perdereau@lemel.fr</a>
+ </li>
+</ul></li>
+
+<li>Standards
+<ul>
+ <li>T13 Technical Committee, responsable de la gestion du standard ATA/ATAPI. Les sp&eacute;cifications officielles sont disponibles sur le site : <a href="http://www.t13.org">www.t13.org</A>
+ </li>
+
+ <li>T10 Technical Committee, responsable de la gestion du standard SCSI mais &eacute;galement des MMC (MultiMedia Commands, il s'agit en fait des jeux de commandes Packet pour CD-ROM). Les sp&eacute;cifications officielles sont disponibles sur le site ftp : <a href="ftp://ftp.t10.org">ftp.t10.org</a>, et notamment dans le r&eacute;pertoire /t10/drafts/. Le site est : <a href="http://www.t10.org">www.t10.org</A>
+ </li>
+</ul></li>
+</ul>
+
+</body>
+</html>

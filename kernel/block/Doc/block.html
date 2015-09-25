@@ -1,0 +1,1680 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head><title>Pilotes bloc d'OWL</title></head>
+<body>
+<center><table cellspacing=0 cellpadding=0 bgcolor=#999999 width=100% cols=2>
+<tr><td width=50% align=left><b><font color=#ffffff>OWL/serverStorage/block.html</font></b></td><td width=50% align=right><b><font color=#ffffff>Projet de documentation d'OWL</font></b></td></tr></table>
+<table width=100% bgcolor=#999999 cellspacing=0 cellpadding=0> 
+<tr><td align=center width=100%><b><font color=#ffffff size=+3>PILOTES BLOC D'OWL</font></b></td></tr>
+</table>
+<table cellspacing=0 cellpadding=0 bgcolor=#999999 width=90%><tr><td align=center width=100%><font color=#ffffff>Description des pilotes bloc d'OWL et de l'interface globale<br>&nbsp;</font></td></tr></table>
+
+<hr width=80%>
+<table width=100% cols=2>
+<tr>
+<td><b>Auteur originel :</b>
+<blockquote>ArnaK, Inc.
+<br><a href="mailto:arnak@arnak.fr.st">arnak@arnak.fr.st</a>
+<br><a href="http://www.arnak.fr.st">http://www.arnak.fr.st</a>
+</blockquote>
+
+<p><b>Auteur(s) :</b>
+<blockquote>POLLET Fabien @lias ArnaK, Inc.
+<br><a href="mailto:arnak@arnak.fr.st">arnak@arnak.fr.st</a>
+<br><a href="http://www.arnak.fr.st">http://www.arnak.fr.st</a>
+
+</td>
+
+<td><b>Version : </b>0.7b
+<br><b>Date de c&eacute;ation du fichier :</b> 01 Ao&ucirc;t 2001
+<br><b>Date de derni&egrave;re mise &agrave; jour du fichier :</b> 20 Novembre 2001
+<p><b>R&eacute;visions :</b>
+<br>- Version 0.1 du 01 Ao&ucirc;t 2001 par ArnaK, Inc. :
+<br>Premi&egrave;re version. block v0.1
+<br>- Version 0.2 du 24 Ao&ucirc;t 2001 par ArnaK, Inc. :
+<br>block v0.2
+<br>- Version 0.3 du 25 Ao&ucirc;t 2001 par ArnaK, Inc. additif du 31 Ao&ucirc;t 2001 :
+<br>block v0.2, ide v0.1, floppy v0.1 (en cours) - Description d&eacute;taill&eacute;e.
+<br>- Version 0.4 du 25 Septembre 2001 par ArnaK, Inc. :
+<br>block v0.3, ide v0.2, packet v0.1, packetcd v0.1 - Description d&eacute;taill&eacute;e.
+<br>- Version 0.5 du 20 Octobre 2001 par ArnaK, Inc., additif du 24 Octobre 2001 :
+<br>Description des pilotes respectant les conventions de code d&eacute;crites par GDO dans son &eacute;bauche de noyau.
+<BR>block v0.3b, ide v0.2b, packet v0.1b, packetcd v0.1b
+<br>- Version 0.6 du 11 Novembre 2001 par ArnaK, Inc. :
+<br>block v0.3d, ide v0.2d, packet v0.1b, packetcd v0.1c, floppy v0.1
+<br>- Version 0.7 du 20 Novembre 2001 par ArnaK, Inc. :
+<br>block v0.3d, ide v0.2e, packet v0.2, packetcd v0.1d, floppy v0.1
+<br>- Modification 0.7b du 28 Janvier 2002 par ArnaK, Inc.
+<p><b>TODO :</b>
+<br>Maintenir ce document &agrave; jour
+</td></tr></table>
+
+<hr width=80%> 
+
+</center>
+
+<a name=sommaire><h2>Sommaire</h2>
+
+<blockquote>
+<a href="#intro">Introduction</a>
+<br><a href="#present">Pr&eacute;sentation g&eacute;n&eacute;rale</a>
+<br><a href="#v0_3d_block">block v0.3d</a>
+<blockquote>
+  <a href="#v0_3d_block_files">Fichiers</a>
+  <br><a href="#v0_3d_block_cond">Conditions de compilation</a>
+  <br><a href="#v0_3d_block_defines">Defines</a>
+  <br><a href="#v0_3d_block_types">Types</a>
+  <br><a href="#v0_3d_block_funcs">Fonctions</a>
+  <br><a href="#v0_3d_block_vars">Variables</a>
+  <br><a href="#v0_3d_block_errs">Erreurs</a>
+  <br><a href="#v0_3d_block_cache">Cache</a>
+  <br><a href="#v0_3d_block_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</a>
+</blockquote>
+<br><a href="#v0_2d_ide">ide v0.2d</a>
+<blockquote>
+  <a href="#v0_2d_ide_files">Fichiers</a>
+  <br><a href="#v0_2d_ide_cond">Conditions de compilation</a>
+  <br><a href="#v0_2d_ide_spec">__IDE_[HC]D_SPECIFIC</a>
+  <br><a href="#v0_2d_ide_defines">Defines</a>
+  <br><a href="#v0_2d_ide_types">Types</a>
+  <br><a href="#v0_2d_ide_funcs">Fonctions</a>
+  <br><a href="#v0_2d_ide_vars">Variables</a>
+  <br><a href="#v0_2d_ide_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</a>
+</blockquote>
+<br><a href="#v0_2_packet">packet v0.2</a>
+<blockquote>
+  <a href="#v0_2_packet_files">Fichiers</a>
+  <br><a href="#v0_2_packet_cond">Conditions de compilation</a>
+  <br><a href="#v0_2_packet_defines">Defines</a>
+  <br><a href="#v0_2_packet_types">Types</a>
+  <br><a href="#v0_2_packet_funcs">Fonctions</a>
+  <br><a href="#v0_2_packet_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</a>
+</blockquote>
+<br><a href="#v0_1d_packetcd">packetcd v0.1d</a>
+<blockquote>
+  <a href="#v0_1d_packetcd_files">Fichiers</a>
+  <br><a href="#v0_1d_packetcd_defines">Defines</a>
+  <br><a href="#v0_1d_packetcd_funcs">Fonctions</a>
+  <br><a href="#v0_1d_packetcd_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</a>
+</blockquote>
+<br><a href="#v0_1_floppy">floppy v0.1</a>
+<blockquote>
+  <a href="#v0_1_floppy_files">Fichiers</a>
+  <br><a href="#v0_1_floppy_cond">Conditions de compilation</a>
+  <br><a href="#v0_1_floppy_spec">__FLOPPY_SPECIFIC</a>
+  <br><a href="#v0_1_floppy_defines">Defines</a>
+  <br><a href="#v0_1_floppy_types">Types</a>
+  <br><a href="#v0_1_floppy_funcs">Fonctions</a>
+  <br><a href="#v0_1_floppy_vars">Variables</a>
+  <br><a href="#v0_1_floppy_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</a>
+</blockquote>
+<br><a href="#exemples">Exemples</a>
+<br><a href="#auteurs">Auteurs</a>
+<br><a href="#voiraussi">Voir aussi</a>
+</blockquote>
+
+<h2><a name="intro" href="#sommaire">Introduction</a></h2>
+
+<p>Cette documentation a pour but de d&eacute;crire de la mani&egrave;re la plus compl&egrave;te possible le fonctionnement et l'utilisation des pilotes block, ide et floppy. Ainsi, toutes les structures, fonctions et variables globales sont d&eacute;crites ici. Id&eacute;alement, cette documentation devrait &ecirc;tre utilis&eacute;e avec le code source et non toute seule pour comprendre le fonctionnement des pilotes.
+
+<h2><a name="present" href="#sommaire">Pr&eacute;sentation g&eacute;n&eacute;rale</a></h3>
+
+<ul>
+<li><b>ide</b>
+    <br>Pilote de disques durs et de CD-ROM IDE
+    <br><i>ide.h</i>
+    <br><i>ide.c</i>
+    <br>Acc&egrave;s en mode CHS ou LBA. Transfert en mode PIO (DMA non support&eacute;). Les partitions sont g&eacute;r&eacute;es comme des disques logiques de mani&egrave;re transparente. Les partitions principales et &eacute;tendues DOS sont reconnues. La liste des disques contient : les disques physiques et les disques logiques (partitions). Le pilote permet donc d'acceder aux disques et aux partitions. Le pilote supporte &eacute;galement les lecteurs de CD-ROM.
+    <p>&nbsp;
+</li>
+
+<li><b>packet</b>
+    <br>Interface pour les commandes Packet, communes &agrave; ATAPI et SCSI.
+    <br><i>packet.h</i>
+    <p>&nbsp;
+</li>
+
+<li><b>packetcd</b>
+    <br>Commandes Packet pour CD-ROM.
+    <br><i>packetcd.h</i>
+    <br><i>packetcd.c</i>
+    <p>&nbsp;
+</li>
+
+<li><b>floppy</b>
+    <br>Pilote de disquettes
+    <br><i>floppy.h</i>
+    <br><i>floppy.c</i>
+    <p>&nbsp;
+</li>
+
+<li><b>block</b>
+    <br>Interface globale
+    <br><i>block.h</i>
+    <br><i>block.c</i>
+    <p>&nbsp;
+</li>
+</ul>
+
+<p>Le pilote global appelle les pilotes IDE et Floppy. Disquettes, disques durs IDE et CD-ROM IDE sont donc utilisables de mani&egrave;re transparente.
+<p><i>Note</i> : le pilote global impl&eacute;mente d&eacute;j&agrave; l'appel du pilote floppy mais ce dernier n'est pas encore disponible.
+
+<h2><a name="v0_3d_block" href="#sommaire">block v0.3d</a></h2>
+
+<h3><a name="v0_3d_block_files" href="#sommaire">Fichiers</a></h3>
+
+<p><ul>
+<li>block.h : d&eacute;clarations et d&eacute;finitions</li>
+<li>block.c : code</li>
+</ul>
+
+<h3><a name="v0_3d_block_cond" href="#sommaire">Conditions de compilation</a></h3>
+
+<p>La compilation du pilote block d&eacute;pend des #define suivants :
+<br>- FLOPPY_DRIVER
+<br>- IDE_HD_DRIVER
+<br>- IDE_CD_DRIVER
+
+<p>Ces #define d&eacute;finissent respectivement le support des pilotes floppy, ide (disques durs) et ide (CD-ROM).
+
+<p>Les autres #define peuvent &eacute;galement &ecirc;tre modifi&eacute;s pour param&eacute;trer le pilote.
+
+<p>La compilation d&eacute;pend &eacute;galement de TESTDOS qui permet de compiler le programme sous DOS.
+
+<h3><a name="v0_3d_block_defines" href="#sommaire">Defines</a></h3>
+
+<ul>
+
+<li><b>#define FLOPPY_DRIVER</b>
+    <br><b>#define IDE_HD_DRIVER</b>
+    <br><b>#define IDE_CD_DRIVER</b>
+    <br>Voir <a href="#v0_3d_block_cond">Conditions de compilation</a>
+    <p>&nbsp;
+</li>
+
+<li><b>#define CACHE_AUTO_SYNC 0x10000</b>
+    <br>Ce #define d&eacute;finit le nombre de secteurs charg&eacute;s dans le cache d&eacute;clenchant automatiquement la synchronisation du cache. Cette valeur n'est pas le nombre de secteurs pr&eacute;sents <i>simultan&eacute;ment</i> mais le nombre de secteurs sauv&eacute;s dans le cache depuis la derni&egrave;re synchronisation.
+    <p>&nbsp;
+</li>
+
+<li><b>#define CACHE_DEFAULT_SIZE 0x10</b>
+    <br>Cette constante d&eacute;finit la taille par d&eacute;faut du cache. Cette taille est utilis&eacute;e lorsque la fonction d'initialisation est appel&eacute;e avec la taille 0.
+    <p>&nbsp;
+</li>
+
+<li><b>#define MAX_MODEL_STR 41</b>
+    <br><b>#define MAX_SERIAL_STR 21</b>
+    <br>Ces constantes d&eacute;finissent la taille maximale (caract&egrave;re de fin inclus) du mod&egrave;le et du num&eacute;ro de s&eacute;rie d'un disque.
+    <p>&nbsp;
+</li>
+
+<li><b>#define BLOCK_ERR_*</b>
+    <br><i>Voir <a href="#v0_3d_block_errs">Erreurs</a></i>
+</li>
+
+</ul>
+
+<h3><a name="v0_3d_block_types" href="#sommaire">Types</a></h3>
+
+<ul>
+
+<li><b>diskID_t</b>
+    <br>Identifiant de disque
+    <br><i>typedef u16 diskID_t;</i>
+
+    <p><table cols=4 border=1 width=100%>
+    <tr><td><b>4 bits de poids fort</b></td><td><b>Type</b></tD><td><b>Pilote</b></td><td>&nbsp;</td></tr>
+    <tr><td>0</td><td>Disquettes</td><td>floppy</td><td>0x0, 0x1, ...</td></tr>
+    <tr><td>1</td><td>Partitions de disques durs IDE</td><td>ide</td><td>0x1000, 0x1001, 0x1002, ...</td></tr>
+    <tr><td>2</td><td>Disques durs IDE</td><td>ide</td><td>0x2000, 0x2001, 0x2002, ...</td></tr>
+    <tr><td>3</td><td>Lecteurs de CD-ROM IDE</td><td>ide</td><td>0x3000, 0x3001, 0x3002, ...</td></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>diskNbSect_t</b>
+    <br>Nombre de secteurs
+    <br><i>typedef u32 diskNbSect_t;</i>
+    <p>&nbsp;
+</li>
+
+<li><b>lbaAddress_t</b>
+    <br>Adresse logique
+    <br><i>typedef u32 lbaAddress_t;</i>
+    <br>Ce type est utilis&eacute; dans les op&eacute;rations de lecture et d'&eacute;criture
+    <br>Il d&eacute;signe un secteur. Le 1e secteur d'un disque correspond &agrave; l'adresse 0, le second &agrave; l'adresse 1, ...
+    <p>&nbsp;
+</li>
+
+<li><b>disksListEntry_t</b>
+    <br>Entr&eacute;e de la liste des disques
+    <br><i>typedef struct __disks_list_entry</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;diskID_t disk;</i>
+    <br><i>&nbsp;&nbsp;struct __disks_list_entry *next;</i>
+    <br><i>} disksListEntry_t</i>
+    <p>&nbsp;
+</li>
+
+<li><b>disksList_t</b>
+    <br>Liste des disques d&eacute;tect&eacute;s
+    <br><i>typedef struct __disks_list</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;u32 nDisks;</i>
+    <br><i>&nbsp;&nbsp;disksListEntry_t *disks;</i>
+    <br><i>} disksList_t;</i>
+    <br>Ce type est utilis&eacute; pour enregister la liste des disques d&eacute;tect&eacute;.
+    <p>&nbsp;
+</li>
+
+<li><b>diskSupportedFeatures_t</b>
+    <br>Fonctions support&eacute;es
+    <br><i>typedef struct __disk_supported</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;bool init;</i>
+    <br><i>&nbsp;&nbsp;bool read;</i>
+    <br><i>&nbsp;&nbsp;bool write;</i>
+    <br><i>&nbsp;&nbsp;bool getInf;</i>
+    <br><i>&nbsp;&nbsp;bool getSize;</i>
+    <br><i>&nbsp;&nbsp;bool lock;</i>
+    <br><i>&nbsp;&nbsp;bool unlock;</i>
+    <br><i>&nbsp;&nbsp;bool isChanged;</i>
+    <br><i>} diskSupportedFeatures_t;</i>
+    <br>Cette structure permet d'indiquer les fonctions support&eacute;es par un disque
+    <p>Les fonctions support&eacute;es par les disquettes sont : init, read, write, getInf, getSize, isChanged.
+    <br>Les fonctions support&eacute;es par les disques durs et partitions de disques durs sont : init, read, write, getInf, getSize.
+    <br>Les fonctions support&eacute;es par les CD-ROM sont : init, read, getInf, getSize, lock, unlock.
+    <p>&nbsp;
+</li>
+
+<li><b>diskType_t</b>
+    <br>Type de disque
+    <br><i>typedef enum{floppy, ideHd, ideCd, nothing} diskType_t;</i>
+    <br>Le type nothing n'est jamais utilis&eacute; mais n'est l&agrave; que pour la forme (compte tenu des conditions de compilations non indiqu&eacute;es ici).
+    <p>&nbsp;
+</li>
+
+<li><b>diskTypeSpecific_t</b>
+    <br>Informations sp&eacute;cifiques au type de disque
+    <br><i>typedef union __disk_type_specific</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;ideHdSpecific_t ideHd;</i>
+    <br><i>&nbsp;&nbsp;ideCdSpecific_t ideCd;</i>
+    <br><i>&nbsp;&nbsp;floppySpecific_t floppy;</i>
+    <br><i>} diskTypeSpecific_t;</i>
+    <p>&nbsp;
+</li>
+
+<li><b>ideHdSpecific_t</b>
+    <br>Informations sp&eacute;cifiques aux disques durs IDE et partitions de disques durs.
+    <br><i>Voir la section correspondante</i>
+
+    <p>&nbsp;
+</li>
+
+<li><b>ideCdSpecific_t</b>
+    <br>Informations sp&eacute;cifiques aux lecteurs de CDèROM IDE.
+    <br><i>Voir la section correspondante</i>
+
+    <p>&nbsp;
+</li>
+
+<li><b>floppySpecific_t</b>
+    <br>Informations sp&eacute;cifiques aux disquettes.
+    <br><i>Voir la section correspondante</i>
+
+    <p>&nbsp;
+</li>
+
+<li><b>disk_t</b>
+    <br>Informations sur un disque
+    <br><i>typedef struct __disk</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;diskID_t id;</i>
+    <br><i>&nbsp;&nbsp;diskNbSect_t nSects;</i>
+    <br><i>&nbsp;&nbsp;diskType_t type;</i>
+    <br><i>&nbsp;&nbsp;u8 model[MAX_MODEL_STR];</i>
+    <br><i>&nbsp;&nbsp;u8 serial[MAX_MODEL_STR];</i>
+    <br><i>&nbsp;&nbsp;diskTypeSpecific_t spec;</i>
+    <br><i>&nbsp;&nbsp;diskSupportedFeatures_t features;</i>
+    <br><i>} disk_t;</i>
+    <p>&nbsp;
+</li>
+     
+<li><b>priorityLevel_t</b>
+    <br>Niveau de priorit&eacute;.
+    <br><i>typedef enum{HIGHhigh=0, HIGHmedium, HIGHlow, MEDIUMhigh, MEDIUMmedium, MEDIUMlow, LOWhigh, LOWmedium, LOWlow} priorityLevel_t;</i>
+    <br>Ce type est utilis&eacute; pour indiquer le niveau de priorit&eacute; d'un secteur (cf. <a href="#v0_3d_block_cache">Cache</a>).
+    <p>&nbsp;
+</li>
+
+<li><b>blockDriverCache_t</b>
+    <br>Entr&eacute;e du cache
+    <br><i>typedef struct __cache</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;u32 id;</i>
+    <br><i>&nbsp;&nbsp;u8 isUsed;</i>
+    <br><i>&nbsp;&nbsp;diskID_t dId;</i>
+    <br><i>&nbsp;&nbsp;lbaAddress_t log;</i>
+    <br><i>&nbsp;&nbsp;priorityLevel_t priority;</i>
+    <br><i>&nbsp;&nbsp;u16 access;</i>
+    <br><i>&nbsp;&nbsp;u8 sector[512];</i>
+    <br><i>} blockDriverCache_t;</i>
+    <p>Ce type d&eacute;fini le contenu d'une entr&eacute;e du cache.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_3d_block_funcs" href="#sommaire">Fonctions</a></h3>
+
+<ul>
+
+<li><b>blockInitDriver</b>
+    <br>Initialiser les pilotes
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockInitDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32</i></tD><td><i>/* Nombre de secteurs max. dans le cache */</i></td></tr>
+    <tR><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction appelle les fonctions d'initialisation des pilotes floppy et ide.
+    <br>Elle doit <b>imp&eacute;rativement</b> &ecirc;tre appel&eacute;e avant toute autre fonction, id&eacute;alement par la proc&eacute;dure d'initialisation du syst&egrave;me. Elle permet de remplir la liste des disques. Un cache de taille 0 est remplc&eacute; par un cache de taille CACHE_DEFAULT_SIZE.
+    <p><b>Attention</b> : cette fonction peut &eacute;chouer pour manque de m&eacute;moire.
+    <p>&nbsp;
+</lI>
+
+<li><b>blockCleanupDriver</b>
+    <br>D&eacute;charger les pilotes.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;blockCleanupDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;void</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction s'occupe de d&eacute;sallouer la m&eacute;moire allou&eacute;e par le pilote (mais pas la m&eacute;moire qu'il occupe). L'appel de cette fonction ne devrait pas &ecirc;tre n&eacute;cessaire dans l'&eacute;tat actuel des choses.
+    <p>&nbsp;
+</li>
+
+<li><b>blockSync</b>
+    <br>Synchroniser le cache et les disques
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockSync(</i></td><td>&nbsp;</td></tr>
+    <tr><tD><i>&nbsp;&nbsp;void</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tR>
+    </table>
+    <p>Cette fonction permet la synchronisation des disques et du contenu du cache. Dans la version actuelle du cache, son appel avant de terminer le pilote n'est pas n&eacute;cessaire (quand bien m&ecirc;me elle le serait, cette op&eacute;ration est de toute fa&ccedil;on r&eacute;alis&eacute;e par blockCleanupDriver).
+    <p>&nbsp;
+</li>
+
+<li><b>blockGetInf</b>
+    <br>Obtenir des informations sur un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><tD><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockGetInf(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t, </i></tD><tD><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;disk_t *</i></td><td><i>/* Structure pour le r&eacute;sultat */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>blockInit</b>
+    <bR>Initialiser un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockInit(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction initialise le disque indiqu&eacute;.
+    <p>&nbsp;
+</li>
+
+<li><b>blockRead</b>
+    <bR>Lire depuis un disque avec la priorit&eacute; minimale (<i>LOWlow</i>).
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockRead(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; lire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; enregistrer les secteurs lus */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction lit un nombre sp&eacute;cifi&eacute; de secteurs depuis le disque sp&eacute;cifi&eacute;. La priorit&eacute; est minimale, les secteurs peuvent donc ne pas rester longtemps dans le cache.
+    <p>&nbsp;
+</li>
+
+<li><b>blockReadWithPriority</b>
+    <bR>Lire depuis un disque en indiquant la priorit&eacute;..
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockReadWithPriority(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; lire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *,</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; enregistrer les secteurs lus */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;priorityLevel_t</i></td><td><i>/* Priorit&eacute; des secteurs lus */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction lit un nombre sp&eacute;cifi&eacute; de secteurs depuis le disque sp&eacute;cifi&eacute;. Cette fonction permet de sp&eacute;cifier la priorit&eacute; des secteurs.
+    <p>&nbsp;
+</li>
+
+<li><b>blockWrite</b>
+    <bR>&Eacute;crire vers un disque avec la priorit&eacute; minimale (<i>LOWlow</i>)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockWrite(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; sont plac&eacute;s les secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction &eacute;crit un nombre sp&eacute;cifi&eacute; de secteurs vers le disque sp&eacute;cifi&eacute;. La priorit&eacute; est minimale, les secteurs peuvent donc ne pas rester longtemps dans le cache. Les secteurs sont physiquement &eacute;crits, leur mise en cache &eacute;tant destin&eacute;e &agrave; une future lecture.
+    <p>&nbsp;
+</li>
+
+<li><b>blockWriteWithPriority</b>
+    <bR>&Eacute;crire vers un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockWriteWithPriority</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; sont plac&eacute;s les secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;priorityLevel_t</i></td><td><i>/* Priorit&eacute; des secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction &eacute;crit un nombre sp&eacute;cifi&eacute; de secteurs vers le disque sp&eacute;cifi&eacute;.
+    <p>&nbsp;
+</li>
+
+<li><b>blockWriteDirectly</b>
+    <br>&Eacute;crire sur un disque sans passer par le cache.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockWriteDirectly(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; sont plac&eacute;s les secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction &eacute;crit un nombre sp&eacute;cifi&eacute; de secteurs vers le disque sp&eacute;cifi&eacute; sans passer par le cache. Elle n'est utiliser que par les autres fonctions du pilote et n'est pas destin&eacute;e &agrave; une utilisation par le programmeur.
+    <p>&nbsp;
+</li>
+
+<li><b>blockNewCacheEntry</b>
+    <br>Obtenir une nouvelle place pour une entr&eacute;e dans le cache
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockNewCacheEntry(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;blockDrivercache_t **</i></td><td><i>/* Pointeur vers l'emplacement s&eacute;lectionn&eacute; */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction recherche une place libre dans le cache. Si celui-ci est plein, elle recherche puis synchronise le secteurs le moins important. Cette fonction n'est utilis&eacute;e que par les fonctions d'acc&egrave;s (blockReadWithPriority et blockWriteWithPriority)
+    <p>&nbsp;
+</li>
+
+<li><b>blockDiskExists</b>
+    <br>V&eacute;rifie l'existance d'un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* 0 ou 1 : non d&eacute;tect&eacute; ou d&eacute;tect&eacute; */</i></td></tr>
+    <tr><td><i>blockDiskExists(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction parcours la liste des disques d&eacute;tect&eacute;s pendant l'initialisation afin de savoir rapidement si un disque existe ou non (afin d'&eacute;viter de longs temps d'attente en cas d'acc&egrave;s &agrave; un disque non existant).
+    <p>&nbsp;
+</li>
+
+<li><b>blockGetSize</b>
+    <br>Obtenir la taille d'un disque en blocs de 512 octets.
+    <br><table cols=2 border=0 width=60%>
+    <tr><tD><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockGetSize(</i></td><tD>&nbsp;</td></tr>
+    <tr><tD><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32 *</i></td><td><i>/* Emplacement pour le r&eacute;sultat */</i></td></tr>
+    <tr><td><i>}</i></td><td>&nbsp;</tD></tr>
+    </table>
+    <p>Cette fonction est surtout utile dans le cas des disques amovibles puisque la taille doit être d&eacute;terminer pour chaque disque ins&eacute;r&eacute; dans le lecteur est n'est pas fixe.
+    <p>&nbsp;
+</li>
+
+<li><b>blockLock</b>
+    <br>Bloquer le m&eacute;dia (interdire le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockLock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de bloquer le m&eacute;dia (CD-ROM)
+    <p>&nbsp;
+</li>
+
+<li><b>blockUnlock</b>
+    <br>D&eacute;bloquer le m&eacute;dia (autoriser le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>blockUnlock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de d&eacute;bloquer le m&eacute;dia (CD-ROM)
+    <p>&nbsp;
+</li>
+
+<li><b>blockIsChanged</b>
+    <br>Le m&eacute;dia a-t-il chang&eacute; ?
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s8</i></td><td><i>/* Retour : -(code d'erreur), 0 (non) ou 1 (oui) */</i></td></tr>
+    <tr><td><i>blockIsChanged(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de savoir si le m&eacute;dia a chang&eacute; depuis la derni&egrave;re initialisation (Disquettes). Il doit dans ce cas &ecirc;tre initialis&eacute; de nouveau.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_3d_block_vars" href="#sommaire">Variables</a></h3>
+
+<ul>
+
+<li><b>blockErrorsStr</b>
+    <br>Messages d'erreur
+    <br><i>extern u8 *blockErrorsStr[];</i>
+    <br><i>blockErrorsStr[errno]</i> o&ugrave; <i>errno</i> repr&eacute;sente le num&eacute;ro d'une erreur (constantes <i>BLOCK_ERR_*</i>) est une chaine de caract&egrave;res repr&eacute;sentant l'erreur <i>errno</i>.
+    <p>&nbsp;
+</li>
+
+<li><b>blockDisksList</b>
+    <br>Liste des disques
+    <br><i>extern disksList_t blockDisksList;</i>
+    <br>Cette variable contient la liste des disques d&eacute;tect&eacute;s (disquettes et disques durs IDE confondus). Cette liste est fournie dans une variable globale et non par une fonction car il s'agit d'une liste chain&eacute;e. Elle ne doit bien s&ucirc;r pas &ecirc;tre modifi&eacute;e. Elle est g&eacute;n&eacute;r&eacute;e au cours de l'initialisation du pilote (blockInitDriver) en fusionnant les listes floppyDisksList et ideDisksList, elles-m&ecirc;mes g&eacute;n&eacute;r&eacute;es par l'initialisation de leurs pilotes respectifs.
+    <p>&nbsp;
+</li> 
+
+<li><b>blockCache</b>
+    <br>Cache
+    <br><i>extern blockDriverCache_t *blockCache;</i>
+    <br>Ce pointeur est dirig&eacute; vers une zone m&eacute;moire allou&eacute;e &agrave; l'initialisation du pilote. Cette zone est le cache du pilote. La m&eacute;moire n'est jamais lib&eacute;r&eacute;e car le pilote ne peut &ecirc;tre enlev&eacute; de la m&eacute;moire qu'&agrave; la fermeture du syst&egrave;me. &Agrave; ce niveau, la lib&eacute;ration de m&eacute;moire est inutile.
+    <p>&nbsp;
+</li>
+
+<lI><b>blockCacheSize</b>
+    <br>Taille du cache
+    <br><i>extern u32 blockCacheSize;</i>
+    <br>Cette variable est initialis&eacute;e &agrave; l'initialisation du pilote. Elle contient la taille du cache en nombre de secteurs que celu-ci peut contenir. La taille de ce cache en octets peut se calculer par <i>blockCacheSize * sizeof(blockDriverCache_t)</i>.
+    <p>&nbsp;
+</li>
+
+<li><b>blockCacheCurrentId</b>
+    <br>ID de l'entr&eacute;e actuelle
+    <br><i>extern u32 blockCacheCurrentId;</i>
+    <br>Cette variable est un compteur utilis&eacute; pour num&eacute;roter les secteurs mis en cache. Elle est &eacute;galement utilis&eacute;e pour la synchronisation automatique (lorsque sa valeur atteint CACHE_AUTO_SYNC)
+    <p>&nbsp;
+</li>
+
+<li><b>blockIsInitialized</b>
+    <br>Le pilote est-il initialis&eacute; ?
+    <br><i>extern s8 blockIsInitialized;</i>
+    <br>Cett variable est utilis&eacute;e pour savoir si le pilote a &eacute;t&eacute; initilias&&eacute; (et pour r&eacute;pondre BLOCK_ERR_UNINITIALIZED dans le cas contraire).
+    <p>&nbsp;
+</li>
+
+</ul>
+ 
+<h3><a name="v0_3d_block_errs" href="#sommaire">Erreurs</a></h3>
+
+<p><center><table cols=2 border=0 width=100%>
+<tr><td>BLOCK_ERR_OK</td><td>Aucune erreur</td></tr>
+<tr><td>BLOCK_ERR_DATA</td><tD>Une erreur de donn&eacute;e est survenue pendant l'op&eacute;rations. Les donn&eacute;es sur le disque sont incorrectes.</tD></tr>
+<tr><td>BLOCK_ERR_UNIMPLEMENTED</tD><td>La commande a &eacute;t&eacute; interrompue, n'est pas support&eacute;e par le disque ou n'est pas support&eacute;e par le pilote</td></tr>
+<tr><td>BLOCK_ERR_LBA</td><td>L'adresse logique indiqu&eacute;e est incorrecte : aucun secteur n'a pu &ecirc;tre trouv&eacute; correspondant &agrave; cette adresse.</td></tr>
+<tr><td>BLOCK_ERR_DISK</td><td>Le disque n'existe pas ou ne r&eacute;pond pas ou l'ID du disque est incorrecte</td></tr>
+<tr><td>BLOCK_ERR_SIZE</td><tD>Nombre de secteurs trop grand ou trop petit</td></tr>
+<tr><td>BLOCK_ERR_WRITE</td><td>Erreur de protection en &eacute;criture</td></tr>
+<tr><td>BLOCK_ERR_UNINITIALIZED</td><tD>Le pilote n'est pas encore initialis&eacute;</td></tr>
+<tr><td>BLOCK_ERR_MEMORY</td><td>M&eacute;moire insuffisante</td></tr>
+<tr><td>BLOCK_ERR_UNKNOWN_DRIVER</td><td>Le pilote sp&eacute;cifi&eacute; est inconnu</td></tr>
+<tr><td>BLOCK_ERR_NO_MEDIA</td><td>Aucun media n'a &eacute;t&eacute; trouv&eacute; dans le lecteur</td></tr>
+<tr><td>BLOCK_ERR_UNKNOWN_ERROR</td><td>Erreur ind&eacute;finie</td></tr>
+</table></center>
+
+<p>La variable blockErrorsStr[] contient des chaines de caract&egrave;res d&eacute;crivant l'erreur pass&eacute;e en indice.
+
+<h3><a name="v0_3d_block_cache" href="#sommaire">Cache</a></h3>
+
+<p>Le pilote block utilise un cache pour acc&eacute;l&eacute;rer les transferts.
+
+<p>Ce cache est initialis&eacute; &agrave; l'initialisation du pilote (<b>blockInitDriver</b>).
+
+<p>Lorsqu'un secteur est lu, il est enregistr&eacute; dans le cache. Si, par la suite, il est lu de nouveau, il sera transf&eacute;r&eacute; depuis le cache et non depuis le disque.
+
+<p>Pour les op&eacute;rations d'&eacute;criture, c'est un peu diff&eacute;rent car une op&eacute;ration d'&eacute;criture est r&eacute;alis&eacute;e imm&eacute;diatement mais le secteur est tout de m&ecirc;me mis en cache au cas o&ugrave; il serait lu plus tard. L'ancienne version du cache diff&eacute;rait &eacute;galement les op&eacute;rations d'&eacute;criture mais cela peut-&ecirc;tre g&eacute;nant car l'op&eacute;ration peut &eacute;chouer par la suite alors qu'elle a renvoy&eacute;e BLOCK_ERR_OK lors de son appel. La prochaine version du cache tentera de r&eacute;soudre ce probl&egrave;me tout en diff&eacute;rant les op&eacute;rations d'&eacute;criture, dans un soucis &eacute;vident de rapidit&eacute; et d'efficacit&eacute;.
+
+<p>Lorsque le cache est plein, le secteur ayant la plus faible priorit&eacute;, le moins grand nombre d'acc&egrave;s et le dernier acc&egrave;s le plus ancien (les trois conditions sont test&eacute;es successivement) sera effac&eacute; du cache. Ainsi, les secteurs susceptibles d'&ecirc;tre lus &agrave; de nombreuses reprises doivent avoir une priorit&eacute; forte, pour rester plus longtemps dans le cache. Cette priorit&eacute; est indiqu&eacute; en param&egrave;tre des fonctions d'acc&egrave;s.
+
+<p>Si le cache est rempli de secteurs importants et qu'un secteur moins important est lu, il est tout de m&ecirc;me mis dans le cache, &agrave; la place d'un secteur plus important. Ceci &eacute;vite de r&eacute;server le cache <i>ad vitam eternam</i> pour quelques secteurs importants (sans compter bien s&ucirc;r la synchronisation automatique).
+
+<p>Contrairement &agrave; l'ancienne version, synchroniser le cache n'est pas n&eacute;cessaire. N&eacute;anmoins, cette op&eacute;ration est tout de m&ecirc;me r&eacute;alis&eacute;e par blockCleanupDriver car cela pourrait &ecirc;tre n&eacute;cessaire dans la prochaine version.
+
+<p>Le cache est &eacute;galement automatiquement vid&eacute; lorsqu'un grand nombre de secteurs a &eacute;t&eacute; lu ou &eacute;crit.
+ 
+<p>La fonction <b>blockSync</b> permet de vider le cache.
+
+<h3><a name="v0_3d_block_prbs" href="#sommaire">Probl&egrave;mes &agrave; r&eacute;soudre</a></h3>
+
+<ul>
+<li>Lamentable gestion des erreurs</li>
+<li>Appronfondir les tests</li>
+<li>Am&eacute;liorer le cache</li>
+</ul>
+
+<h2><a name="v0_2d_ide" href="#sommaire">ide v0.2d</a></h2>
+
+<p>Ce pilote supporte la plupart des disques et lecteurs de CD-ROM IDE. Il reconnait l'adressage CHS et LBA. Seul le transfert PIO est support&eacute; (DMA n'est pas utilis&eacute;).
+
+<p>Le pilote supporte de mani&egrave;re transparente les partitions qui sont g&eacute;r&eacute;es comme des disques logiques. Les disques complets sont &eacute;galement g&eacute;r&eacute;s de cette mani&egrave;re. Le pilote ne fait donc aucune diff&eacute;rence entre les disques et les partitions de disques. En interne, un type sp&eacute;cial permet d'identifier les disques physiques sur lesquels se trouvent les disques logiques (disques ou partitions de disques).
+
+<h3><a name="v0_2d_ide_files" href="#sommaire">Fichiers</a></h3>
+
+<p><ul>
+<li>ide.h : d&eacute;clarations et d&eacute;finitions</li>
+<li>ide.c : code</li>
+</ul>
+
+<h3><a name="v0_2d_ide_conf" href="#sommaire">Conditions de compilation</a></h3>
+
+<p>Outre __IDE_HD_SPECIFIC, __IDE_CD_SPECIFIC (voir la section suivante) et les diff&eacute;rents #define, le pilote est compil&eacute; de mani&egrave;re conditionnelle en fonction des constantes IDE_HD_DRIVER et IDE_CD_DRIVER d&eacute;finies dans le pilote block et qui permettent de savoir quels sont les pilotes &agrave; compiler (Pilote disque dur et pilote CD-ROM).
+
+<p>La compilation d&eacute;pend &eacute;galement de TESTDOS qui permet de compiler le programme sous DOS.
+
+<h3><a name="v0_2d_ide_spec" href="#sommaire">__IDE_[HC]D_SPECIFIC</a></h3>
+
+<p>Lorsque <i>ide.h</i> est inclus avec ces constantes d&eacute;finies (__IDE_HD_SPECIFIC et __IDE_CD_SPECIFIC), seuls les types idePhysicalDiskID_t et ideHdSpecific_t ou ideCdSpecific_t sont d&eacute;finis. Lorsque ce fichier est inclus sans ces constantes, tout le reste est d&eacute;fini.
+
+<p>Ces types doivent en effet &ecirc;tre d&eacute;finis au d&eacute;but de block.h tandis que le reste doit &ecirc;tre d&eacute;fini &agrave; la fin.
+
+<h3><a name="v0_2d_ide_defines" href="#sommaire">Defines</a></h3>
+
+<ul>
+
+<li><b>#define IDE_MAX_ADAPTERS 4</b>
+    <br>Nombre maximum de contr&ocirc;leurs. 2 sur la plupart des cartes, mais les cartes haut de gamme peuvent en proposer jusque 4.
+    <p>&nbsp;
+</li>
+
+<li><b>#define IDE_DATA 0</b>
+    <br><b>#define IDE_ERR 1</b>
+    <br><b>#define IDE_FEATURES 1</b>
+    <br><b>#define IDE_COUNT 2</b>
+    <br><b>#define IDE_SECT 3</b>
+    <br><b>#define IDE_CYLLOW 4</b>
+    <br><b>#define IDE_CYLHIGH 5</b>
+    <br><b>#define IDE_HEADDSK 6</b>
+    <br><b>#define IDE_STAT 7</b>
+    <br><b>#define IDE_COMMAND 7</b>
+    <br><b>#define IDE_STAT2 0x206</b>
+    <br><b>#define IDE_CTRL 0x206</b>
+    <br>Ces constantes permettent de calculer la valeur des ports des contr&ocirc;leurs. Il faut les ajouter &agrave; une valeur sp&eacute;cifique &agrave; chaque contr&ocirc;leur indiqu&eacute;e dans la variable ide_adapt.
+    <p>&nbsp;
+</li>
+
+<li><b>#define IDE_COMM_RECAL 0x10</b>
+    <br>#define IDE_COMM_READ 0x20</b>
+    <br>#define IDE_COMM_WRITE 0x30</b>
+    <br>#define IDE_COMM_GETINF 0xec</b>
+    <br>#define IDE_COMM_PACKET 0xa0</b>
+    <br>#define IDE_COMM_GETINF_PACKET 0xa1</b>
+    <br>Ces constantes d&eacute;finissent les valeurs des commandes IDE suivantes :
+    <br><ul>
+    <li>Recalibrer</li>
+    <li>Lire</li>
+    <li>&Eacute;crire</li>
+    <li>Obtenir des informations sur un disque ATA</li>
+    <li>Envoyer un paquet de commande</li>
+    <li>Obtenir des informations sur un disque ATAPI</li>
+    </ul>
+    <p>&nbsp;
+</li>
+
+<li><b>#define IDE_MASTER 0</b>
+    <br>#define IDE_SLAVE 1</b>
+    <br>Ces constantes repr&eacute;sentent le num&eacute;ro identifiant, sur un contr&ocirc;leur, les disques ma&icric;tre et esclave.
+    <p>&nbsp;
+</li>
+
+<li><b>#define ATA_PROTOCOL 0</b>
+    <br>#define ATAPI_PROTOCOL 1</b>
+    <br>Ces constantes sont utilis&eacute;es pour indiquer le protocole d'un disque (ATA ou ATAPI) pour certaines fonctions.
+    <p>&nbsp;
+</li>
+
+<li><b>#define IDE_TIMEOUT 10000000</b>
+    <br>Cette constante d&eacute;finit le nombre de lecture du port d'&eacute;tat avant de conclure que le contr&ocirc;leur n'est pas pr&ecirc;t. En pratique, sauf circonstances anormales, cela ne devrait se produire que pendant la d&eacute;tection des disques. La plupart du temps, lorsque le disque existe, le contr&ocirc;leur r&eacute;pond avant ce d&eacute;lai.
+    <p>&nbsp;
+</li>
+
+<li><b>#define L400NS(x) __asm__("inb %%dx, %%ax\ninb %%dx, %%ax\ninb %%dx, %%ax\ninb %%ax, %%dx\n" : : "d" (x))</b>
+    <br>Cette macro lit 4 fois le port sp&eacute;cifi&eacute; (par exemple le port d'&eacute;tat). Elle est utilis&eacute;e lorsque le protocole r&eacute;clame une attente de 400 ns au moins.
+    <p>&nbsp;
+</li>
+
+<li><b>#define PACKET_TRY_AGAIN 10</b>
+    <br>Cette constante d&eacute;finit le nombre d'essai avant de conclure &agrave; l'&eacute;chec d'une commande Packet. Les p&eacute;riph&eacute;riques ATAPI &eacute;tant parfois plus long &agrave; r&eacute;pondre que les p&eacute;riph&eacute;riques ATA (notamment dans le cas de disques amovibles), cette constante permet d'attendre plus longtemps que le contr&ocirc;leur soit pr&ecirc;t.
+    <p>&nbsp;
+</li>
+
+<li><b>#define DEVICE_ATAPI_CDROM 0x5</b>
+    <br>Cette constante d&eacute;finit le num&eacute;ro du type <i>Lecteur de CD-ROM</i> pour la reconnaissance de ces lecteurs. Il ne s'agit pas d'un param&egrave;tre du pilote mais du constante du standard qui ne doit pas &ecirc;tre modifi&eacute;e.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2d_ide_types" href="#sommaire">Types</a></h3>
+
+<ul>
+
+<li><b>idePhysicalDiskID_t</b>
+    <br>ID d'un disque physique
+    <br><i>typedef u8 idePhysicalDiskID_t;</i>
+    <br>Ce type d&eacute;signe, en interne l'ID d'un disque physique.
+    <br><i>idePhysicalDiskID_t id;</i>
+    <br><i>id&gt;&gt;4</i> d&eacute;signe le num&eacute;ro du contr&ocirc;leur de 1 &agrave; 4
+    <br><i>id&amp;0xf</i> d&eacute;signe le disque (IDE_MASTER ou IDE_SLAVE)
+    <br><i>Ce type est d&eacute;fini si </i>__IDE_HD_SPECIFIC<i> et/ou <i>__IDE_CD_SPECIFIC</i> est/sont d&eacute;finie(s)</i>
+    <p>&nbsp;
+</li>
+
+<li><b>ideHdSpecific_t</b>
+    <br>Informations sp&eacute;cifiques &agrave; un disque IDE.
+    <br><I>typedef struct __ide_hd_specific</i>
+    <br><i>{</i>
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>&nbsp;&nbsp;u8 lba;</i></td><td><i>/* Le disque supporte-t-il l'adressage LBA ? */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t start;</i></td><td><i>/* D&eacute;but de la partition (0 s'il s'agit d'un disque complet) */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;idePhysicalDiskID_t pId;</i></td><td><i>/* ID du disque physique sur lequel se trouve ce disque logique */</i></tD></tr>
+    <tr><td><i>&nbsp;&nbsp;u16 heads;</i></td><td><i>/* Nombre de t&ecirc;tes du disque physique */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u16 cyls;</i></tD><td><i>/* Nombre de cylindre du disque physique */</i></td></tR>
+    <tr><td><i>&nbsp;&nbsp;u16 sectPerCyl;</i></td><td><i>/* Nombre de secteurs par cylindre du disque physique */</i></tD></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 partBIOS;</i></td><td><i>/* Numéro de la partition BIOS (0 pour un disque complet) */</i></td></tr>
+    </table>
+    <br><i>} ideHdSpecific_t;</i>
+    <p>Ce type contient des informations sp&eacute;cifiques aux disques IDE et qui sont utilis&eacute;es par les autres fonctions du pilote.
+    <br><i>Ce type est d&eacute;fini si </i>__IDE_HD_SPECIFIC<i> est d&eacute;finie.</i>
+    <p>&nbsp;
+</li>
+
+<li><b>ideCdSpecific_t</b>
+    <br>Informations sp&eacute;cifiques &agrave; un lecteur de CD-ROM IDE.
+    <br><I>typedef struct __ide_cd_specific</i>
+    <br><i>{</i>
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>&nbsp;&nbsp;idePhysicalDiskID_t pId;</i></td><td><i>/* ID du disque physique sur lequel se trouve ce disque logique */</i></tD></tr>
+    </table>
+    <br><i>} ideCdSpecific_t;</i>
+    <p>Ce type contient des informations sp&eacute;cifiques aux lecteurs de CD-ROM IDE et qui sont utilis&eacute;es par les autres fonctions du pilote.
+    <br><i>Ce type est d&eacute;fini si </i>__IDE_CD_SPECIFIC<i> est d&eacute;finie.</i>
+    <p>&nbsp;
+</li>
+
+<li><b>ideAddressType_t</b>
+    <br>Mode d'adressage
+    <br><i>typedef enum {chs, lba} ideAddressType_t;</i>
+    <br>Ce type d&eacute;finit le mode d'adressage choisi pour une op&eacute;ration d'acc&egrave;s (LBA si le disque le supporte, CHS sinon)
+    <p>&nbsp;
+</li>
+
+<li><b>ideTransfType_t</b>
+    <br>Type de transfert
+    <br><i>typedef enum {itt_no, itt_read, itt_write} ideTransfType_t;</i>
+    <br>Ce type indique le mode de transfert de donn&eacute;es r&eacute;clam&eacute; par la commande (itt_no = pas de transfert de donn&eacute;es (ex. : recalibrage) ; itt_read = transfert depuis le contr&ocirc;leur (ex. : lecture) ; itt_write = transfert vers le contr&ocirc;leur (ex. : &eacute;criture)).
+    <p>&nbsp;
+</li>
+
+<li><b>ideParam_t</b>
+    <br>Param&egrave;tres d'une commande
+    <br><i>typedef struct __ide_param</i>
+    <br><i>{</i>
+    <br><table cols=2 border=0 width=60%>
+    <tr><tD><i>&nbsp;&nbsp;u8 nSects;</i></td><td><i>/* Port IDE_COUNT */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;ideAddressType_t adrType;</i></td><td><i>/* Mode d'adressage, utilis&eacute; pour calculer IDE_HEADDSK */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8 sector;</i></td><td><i>/* IDE_SECTOR */</i></tD></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 cylLow;</i></td><td><i>/* IDE_CYLLOW */</i></tD></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 cylHigh;</i></td><tD><i>/* IDE_CYLHIGH */</i></td></tr>
+    <tr><td><i>&nbsp;&nsbp;u8 head;</i></td><td><i>/* IDE_HEAD */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;ideTransfType_t trfType;</i></tD><td><i>/* Mode de transfert, utilis&eacute; pour effectuer le transfert apr&egrave;s envoi de la commande */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u16 *buf;</td><td><i>/* Pointeur vers un tampon pour le transfert */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 command;</i></td><td><i>/* IDE_COMMAND */</i></td></tr>
+    </table>
+    <br><i>} ideParam_t;</i>
+    <p>Ce type est utilis&eacute; pour la fonction ideSendCommand pour envoyer une commande et, si besoin, effectuer le transfert de donn&eacute;es. L'ID du disque physique est donn&eacute;e dans un param&egrave;tre s&eacute;par&eacute;. Cette commande ne g&egrave;re pas la commande Send Packet.
+    <p>&nbsp;
+</li>
+
+<li><b>ideDisksInf_t</b>
+    <br>Informations sur les disques
+    <br><i>typedef struct __ide_disksinf</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;disk_t diskInf;</i>
+    <br><i>&nbsp;&nbsp;struct __ide_disksinf *next;</i>
+    <br><i>} ideDisksInf_t;</i>
+    <p>Le pilote IDE, lors de l'initialisation, enregistre les informations sur les disques qu'il d&eacute;tecte afin de r&eacute;pondre plus rapidement &agrave; l'appel de ideGetInf (et donc de blockGetInf). Cette structure sert pour enregistrer ces informations.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2d_ide_funcs" href="#sommaire">Fonctions</a></h3>
+
+<ul>
+
+<li><b>ideInitDriver</b>
+    <br>Initialiser le pilote
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideInitDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;void</i></tD><td><i>&nbsp;</i></td></tr>
+    <tR><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction peut prendre une ou deux secondes. Elle d&eacute;tecte tous les disques durs IDE et les partitions qu'ils contiennent puis enregistre les informations les concernant.
+    <p>&nbsp;
+</li>
+
+<li><b>ideCleanupDriver</b>
+    <br>Terminer le pilote
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideCleanupDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp,&nbsp;void</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction d&eacute;salloue la m&eacute;moire allou&eacute;e par le pilote (mais pas celle qu'il occupe) et est destin&eacute;e &agrave; &ecirc;tre appel&eacute;e avant de quitter le syst&egrave;me.
+    <p>&nbsp;
+</li>
+
+<li><b>ideGetInf</b>
+    <br>Informations sur un disque logique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideGetInf(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></tD><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;disk_t *</i></tD><td><i>/* Structure pour le r&eacute;sultat */</i></td></tr>
+    <tR><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction permet de remplir une structure <i>disk_t</i> avec les informations concernant un disque logique.
+    <p>&nbsp;
+</li>
+
+<li><b>ideInit</b>
+    <br>Initialiser un disque logique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideInit(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>);</i></td><td><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction initialise un disque logique.
+    <p>&nbsp;
+</li>
+
+<li><b>ideRead</b>
+    <br>Lire depuis un disque logique
+    <br><table cols=2 border=0 width=60%>
+    <tr><tD><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideRead(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du 1er secteur */</i></td></tR>
+    <tr><tD><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon */</i></td></tr>
+    <tr><td><i>);</i></td><td><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction lit un nombre sp&eacute;cifi&eacute; de secteurs depuis un disque logique. Que le disque supporte ou non LBA, le secteur doit &ecirc;tre indiqu&eacute; en LBA, la conversion, si elle est n&eacute;cessaire, sera effectu&eacute;e par le pilote.
+    <p>&nbsp;
+</li>
+
+<li><b>ideWrite</b>
+    <br>&Eacute;crire sur un disque logique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>ideWrite(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse LBA du 1er secteur &agrave; &eacute;crire */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction permet d'&eacute;crire un nombre sp&eacute;cifi&eacute; de secteurs sur un disque logique.
+    <p>&nbsp;
+</li>
+
+<li><b>ideGetSize</b>
+    <br>Obtenir la taille d'un disque en blocs de 512 octets.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideGetSize(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32 *</i></td><td><i>/* Emplacement pour le résultat */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction permet d'obtenir la taille d'un disque en blocs de 512 ocets. Elle est surtout destin&eacute;e aux disques amovibles dont la taille n'est pas inscrite dans la structure d'informations sur un lecteur (renvoy&eacute;e par ide_getinf).
+    <p>&nbsp;
+</li>
+
+
+<li><b>ideLock</b>
+    <br>Bloquer le m&eacute;dia (interdire le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideLock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de bloquer le m&eacute;dia (CD-ROM)
+    <p>&nbsp;
+</li>
+
+<li><b>ideUnlock</b>
+    <br>D&eacute;bloquer le m&eacute;dia (autoriser le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>ideUnlock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de d&eacute;bloquer le m&eacute;dia (CD-ROM)
+    <p>&nbsp;
+</li>
+
+<li><b>ideIsChanged</b>
+    <br>Le m&eacute;dia a-t-il chang&eacute; ?
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s8</i></td><td><i>/* Retour : -(code d'erreur), 0 (non) ou 1 (oui) */</i></td></tr>
+    <tr><td><i>ideIsChanged(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de savoir si le m&eacute;dia a chang&eacute; depuis la derni&egrave;re initialisation (Disquettes). Il doit dans ce cas &ecirc;tre initialis&eacute; de nouveau. Elle renvoie toujours -(BLOCK_ERR_UNIMPLEMENTED)
+    <p>&nbsp;
+</li>
+
+<li><b>ideGetLogicalDisks</b>
+    <br>Obtenir les disques logiques pr&eacute;sents sur un disque pysique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>ideGetLogicalDisks(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse du MBR &agrave; lire */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t</i></td><td><i>/* MBR de base */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction, appel&eacute;e &agrave; l'initialisation pour chaque disque physique d&eacute;tect&eacute;, ajoute &agrave; la liste des disques (le pilote, en interne, g&egrave;re deux listes : une pour les disques physiques et une pour les disques logiques) le disque complet puis chaque partition trouv&eacute;e. Les partitions logiques (dans les partitions &eacute;tendues DOS) sont support&eacute;es.
+    <p>Les param&egrave;tres de cette fonction n&eacute;cessitent quelques explications :
+    <br>Le MBR &agrave; lire est le secteur contenant la table des partitions que la fonction va parcourir pour trouver les partitions. Au d&eacute;but, il s'agit du 1er secteur du disque, mais lorsqu'une partition &eacute;tendue DOS est trouv&eacute;e, le 1er secteur de cette partition est utilis&eacute;. Le dernier param&egrave;tre, le MBR "de base", est n&eacute;cessaire pour calculer les adresses des partitions logiques. En effet, l'adresse des partitions logiques pr&eacute;sentes dans les partitions &eacute;tendues DOS se calcule par rapport &agrave; l'adresse de la partition &eacute;tendue qui la contient. Mais les partitions &eacute;tendues contenues elles-m&ecirc;mes dans des partitions &eacute;tendues sont relatives &agrave; l'adresse de la premi&egrave;re partition &eacute;tendue, la partition "de base". Pour de meilleurs renseignements sur la structures d'une partition &eacute;tendue DOS, voyez la section <a href=#voiraussi>Voir aussi</a>.
+    <p>&nbsp;
+</li>
+
+<li><b>idepGetInf</b>
+    <br>Obtenir des informations sur un disque physique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepGetInf(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* ID */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;disk_t *</i></td><td><i>/* Structure pour le r&eacute;sultat */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction permet d'obtenir des informations sur un disque physique. Cette fonction n'est utilis&eacute;e que pendant l'initialisation.
+    <p>&nbsp;
+</li>
+
+<li><b>idepInit</b>
+    <br>Initialiser un disque physique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepInit(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction est appel&eacute;e par <i>ideInit</i> pour initialiser un disque.
+    <p>&nbsp;
+</li>
+
+<li><b>idepRead</b>
+    <br>Lire depuis un disque physique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepRead(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* ID */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; lire */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du 1er secteur &agrave; lire */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction est appel&eacute;e par <i>ideRead</i> pour lire depuis un disque.
+    <p>&nbsp;
+</li>
+
+<li><b>idepWrite</b>
+    <br>&Eacute;crire vers un disque physique
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepWrite(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* ID */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du 1er secteur */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction est appel&eacute;e par ideWrite pour &eacute;crire vers un disque.
+    <p>&nbsp;
+</li>
+
+<li><b>idepGetSelectedDisk</b>
+    <br>Obtenir le disque s&eacute;lectionn&eacute; sur un contr&ocirc;leur
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s8</i></tD><td><i>/* Retour : disque (IDE_MASTER ou IDE_SLAVE) ou -(code d'erreur) */</td></tr>
+    <tr><td><i>idepGetSelectedDisk(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8</i></td><td><i>/* Num&eacute;ro du contr&ocirc;leur de 1 &agrave; 4 (de 1 &agrave; IDE_MAX_ADAPTERS) */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction permet de savoir si le disque s&eacute;lectionn&eacute; sur un contr&ocirc;leur est le ma&icric;tre ou l'esclave. Cette fonction n'est utilis&eacute;e que pendant l'initialisation.
+    <p>&nbsp;
+</li>
+
+<li><b>idepSetSelectedDisk</b>
+    <br>Changer le disque s&eacute;lectionn&eacute; sur un contr&ocirc;leur
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s8</i></tD><td><i>/* Retour : disque (IDE_MASTER ou IDE_SLAVE) ou -(code d'erreur) */</td></tr>
+    <tr><td><i>idepSetSelectedDisk(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8,</i></td><td><i>/* Num&eacute;ro du contr&ocirc;leur */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8</i></td><td><i>/* Disque (IDE_MASTER ou IDE_SLAVE) */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction s&eacute;lectionne un disque puis renvoie le r&eacute;sultat de <i>idepGetSelectedDisk</i>. Cette fonction n'est utilis&eacute;e que pendant l'initialisation est permet de tester la pr&eacute;sence d'un contr&ocirc;leur.
+    <p>&nbsp;
+</li>
+
+<li><b>idepGetAddressParam</b>
+    <br>D&eacute;terminer les param&egrave;tres d'adressage.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepGetAddressParam(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* ID */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;ideParam_t *</i></td><td><i>/* Structure pour enregistrer les param&egrave;tres */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette fonction, &agrave; partir d'une adresse logique, d&eacute;termine les param&egrave;tres d'adressage en tenant compte des caract&eacute;ristiques du disque. Si n&eacute;cessaire, elle effectue la conversion LBA-&gt;CHS.
+    <p>&nbsp;
+</li>
+
+<li><b>idepSendCommand</b>
+    <br>Envoyer une commande
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s16</i></tD><td><i>/* Retour : registre d'erreur ou -(code d'erreur) */</td></tr>
+    <tr><td><i>idepSendCommand(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;ideParam_t</i></td><td><i>/* Commande et param&egrave;tres */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette commande envoie au contr&ocirc;leur les param&egrave;tres, la commande puis, selon le type de transfert indiqu&eacute;, effectue ou non le transfert. Elle retourne alors le contenu du registre d'erreur (<i>IDE_ERR</i>) ou, en cas d'erreur, l'oppos&eacute; du code d'erreur.
+    <p>&nbsp;
+</li>
+
+<li><b>idepSendPacket</b>
+    <br>Envoyer un paquet de commande
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>idepSendPacket(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;idePhysicalDiskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;packet_t,</i></td><td><i>/* Packet */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Buffer pour le transfert si la commande n&eacute;cessite un transfert (r&eacute;ponse) */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction envoie un paquet de commande et en lit la r&eacute;ponse (cette fonction n'a &eacute;t&eacute; con&ccedil;ue que pour les commandes renvoyant une r&eacute;ponse. Pour d'autres commandes, il pourra &ecirc;tre n&eacute;cessaire de la modifier)
+    <p>&nbsp;
+</li>
+
+<li><b>idepWait</b>
+    <br>Attendre que le contr&ocirc;leur soit pr&ecirc;t
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></tD><td><i>/* Retour : code d'erreur */</td></tr>
+    <tr><td><i>idepWait(</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8,</i></td><td><i>/* Contr&ocirc;leur */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8,</i></td><td><i>/* Masque */</i></td></tr>
+    <tr><tD><i>&nbsp;&nbsp;u8</i></td><td><i>/* Valeur OK */</i></td></tr>
+    <tr><tD><i>);</i></td><tD><i>&nbsp;</i></td></tr>
+    </table>
+    <p>Cette commande lit en boucle le port d'&eacute;tat (<i>IDE_STAT2</I>), applique le masque &agrave; la valeur lue (<i>c &amp; mask</i>) jusqu'&agrave; ce que la valeur corresponde &agrave; la valeur OK (retourne <i>BLOCK_ERR_OK</i>) ou que la boucle ait r&eacute;alis&eacute;e <i>IDE_TIMEOUT</i> tours (retourne <i>BLOCK_ERR_DISK</i>).
+    <p>&nbsp;
+</li>
+
+<li><b>idepGetProtocol</b>
+    <br>D&eacute;tecter le protocole d'un disque.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s16</i></tD><td><i>/* 0 (ATA), 1 (ATAPI) ou -(code d'erreur) */</i></td></tr>
+    <tr><td><i>idepGetProtocol(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;idePhysicalDiskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</tD></tr>
+    </table>
+    <p>Cette fonction permet de connaitre le protocole d'un disque.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2d_ide_vars" href="#sommaire">Variables</a></h3>
+
+<ul>
+
+<li><b>hdpCurrentId</b>
+    <br><b>hdCurrentId</b>
+    <br><b>cdCurrentId</b>
+    <br>ID courant pour les disques
+    <br><i>extern diskID_t hdpCurrentId, hdCurrentId, cdCurrentId;</i>
+    <br>Pendant l'initialisation, le pilote d&eacute;tecte les disques et rempli la liste des disques. Ces variables sont des compteurs permettant de d&eacute;terminer les ID (hdpCurrentId pour les partitions de disques durs, hdCurrentId pour les disques durs et cdCurrentId pour les CD-ROM). Ces variables sont initialis&eacute;es &agrave; 0x1000, 0x2000 et 0x3000 puis incr&eacute;ment&eacute;es &agrave; chaque ajout dans la liste.
+    <p>&nbsp;
+</li>
+
+<li><b>ideAdapt</b>
+    <br>Ports correspondant aux 4 contr&ocirc;leurs
+    <br><i>extern u16 ideAdapt[IDE_MAX_ADAPTERS];</i>
+    <br><i>ideAdapt[N - 1]</i> ou N est un num&eacute;ro de contr&ocirc;leur de 1 &agrave; 4 contient la valeur &agrave; ajouter aux #define <i>IDE_DATA, IDE_STAT, ...</i> pour calculer la valeur des ports pour chaque contr&ocirc;leur. Ainsi, le port de commande du 2&egrave;me contr&ocirc;leur est <i>ideAdapt[1] + IDE_COMMAND</i>.
+    <p>&nbsp;
+</li>
+
+<li><b>ideDisksList</b>
+    <br>Liste des disques logiques d&eacute;tect&eacute;s
+    <br><I>extern disksList_t ideDisksList;</i>
+    <br>Cette liste est g&eacute;n&eacute;r&eacute;e &agrave; l'initialisation puis est utilis&eacute;e par le pilote block pour g&eacute;n&eacute;rer la liste block_disks_list.
+    <p>&nbsp;
+</li>
+
+<li><b>ideDetectedDisksInf</b>
+    <br>Liste des disques logiques avec informations.
+    <br><i>extern ideDisksInf_t *ideDetectedDisksInf;</i>
+    <br>Cette liste est g&eacute;n&eacute;r&eacute;e &agrave; l'initialisation afin d'acc&eacute;l&eacute;rer l'obtention d'informations sur un disque (certaines &eacute;tant d'ailleurs n&eacute;cessaires pour beaucoup d'op&eacute;rations).
+    <p>&nbsp;
+</li>
+
+<li><b>idepDetectedDisks</b>
+    <br>Liste des disques physiques d&eacute;tect&eacute;s
+    <br><i>extern disksList_t idepDetectedDisks;</i>
+    <br>Cette liste est similaire &agrave; <i>ideDisksList</i> mais concerne les disques physiques.
+    <p>&nbsp;
+</li>
+
+<li><b>idepDetectedDisksInf</b>
+    <br>Liste des disques physiques avec informations
+    <br><i>extern disk_t idepDetectedDisksInf[IDE_MAX_ADAPTERS*2];</i>
+    <br>Cette liste est utilis&eacute;e uniquement pendant l'initialisation pour g&eacute;n&eacute;rer ensuite la liste <i>ideDetectedDisksInf</i>.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2d_ide_prbs" href="#sommaire">Probl&egrave;mes &agrave; r&eacute;soudre</a></h3>
+
+<ul>
+<li>Lamentable gestion des erreurs</li>
+<li>Appronfondir les tests</li>
+<li>Ajouter le support des transferts DMA</li>
+<li>Le syst&egrave;me d'attente doit &ecirc;tre am&eacute;lior&eacute;</li>
+<li>Il faut impl&eacute;menter DMA</li>
+</ul>
+
+
+<h2><a name="v0_2_packet" href="#sommaire">packet v0.2</a></h2>
+
+<p>Ce &quot;pilote&quot; contient quelques d&eacute;finitions utilis&eacute;es par les pilotes faisant appel &agrave; l'interface Packet ainsi que les commandes communes &agrave; tous les p&eacute;riph&eacute;riques SCSI et ATAPI.
+
+<h3><a name="v0_2_packet_files" href="#sommaire">Fichiers</a></h3>
+
+<p><ul>
+<li>drivers/block/packet.h : d&eacute;clarations et d&eacute;finitions</li>
+</ul>
+
+<h3><a name="v0_2_packet_cond" href="#sommaire">Conditions de compilation</a></h3>
+
+<p>La compilation d&eacute;pend de TESTDOS qui permet de compiler le programme sous DOS.
+
+<h3><a name="v0_2_packet_defines" href="#sommaire">Defines</a></h3>
+
+<ul>
+
+<li><b>#define MAX_PACKET_SIZE 16</b>
+    <br>Cette constante d&eacute;finie la taille maximale d'un paquet (16 octets).
+    <p>&nbsp;
+</li>
+
+<li><b>#define PACKET_PREVENT_ALLOW_MEDIUM_REMOVAL 0x1e</a>
+    <br>Commande Prevent or Allow Medium Removal
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2_packet_types" href="#sommaire">Types</a></h3>
+
+<ul>
+
+<li><b>packet_t</b>
+    <br>Description d'un paquet
+    <br><i>typedef struct __packet</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;u32 packetSize;</i>
+    <br><i>&nbsp;&nbsp;u8 packetBuffer[MAX_PACKET_SIZE];</i>
+    <br><i>&nbsp;&nbsp;u32 responseSize;</i>
+    <br><i>} packet_t;</i>
+    <br>Cette structure permet de d&eacute;crire un paquet (taille, paquet et taille de la r&eacute;ponse).
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2_packet_funcs" href="#sommaire">Fonctions</a></h3>
+
+<ul>
+
+<li><b>packetPreventAllowMediumRemoval</b>
+    <br>Cr&eacute;er le paquet Prevent or Allow Medium Removal
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td>&nbsp;</td>
+    <tr><td><i>packetPreventAllowMediumRemoval(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;bool,</i></td><td><i>/* Autoriser ? */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;packet_t *</i></td><td><i>/* Structure pour le paquet */</i></td></tr>
+    <tr><td><i>);</i></tD><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette commande cr&eacute;e le paquet Prevent or Allow Medium Removal permettant d'interdire ou d'autoriser le retrait du m&eacute;dia.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_2_packet_prbs" href="#sommaire">Probl&egrave;mes &agrave; r&eacute;soudre</a></h3>
+
+<ul>
+<li>La description des paquet est incompl&egrave;te et pourrait ne plus suffir &agrave; l'avenir.</li>
+</ul>
+
+<h2><a name="v0_1d_packetcd" href="#sommaire">packetcd v0.1d</a></h2>
+
+<p>Ce &quot;pilote&quot; permet de cr&eacute;er des paquets de commande. Il est utilis&eacute; par les pilotes faisant appel &agrave; l'interface Packet (ATAPI et, plus tard, pourquoi pas SCSI).
+
+<h3><a name="v0_1d_packetcd_files" href="#sommaire">Fichiers</a></h3>
+
+<p><ul>
+<li>drivers/block/packetcd.h : d&eacute;clarations et d&eacute;finitions</li>
+<li>drivers/block/packetcd.c : code</li>
+</ul>
+
+<h3><a name="v0_1d_packetcd_defines" href="#sommaire">Defines</a></h3>
+
+<ul>
+
+<li><b>#define PACKET_CD_READ_CAPACITY 0x25</b>
+    <br><b>#define PACKET_CD_READ 0xa8</b>
+    <br>Ces #define d&eacute;finissent les valeurs des commandes Read Capacity et Read pour la construction des paquets.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1d_packetcd_funcs" href="#sommaire">Fonctions</a></h3>
+
+<ul>
+
+<li><b>packetCdReadCapacity</b>
+    <br>Cr&eacute;er le paquet Read Capacity
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td>&nbsp;</td>
+    <tr><td><i>packetCdReadCapacity(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;packet_t *</i></td><td><i>/* Structure pour le paquet */</i></td></tr>
+    <tr><td><i>);</i></tD><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette commande cr&eacute;e le paquet Read Capacity permettant d'obtenir la taille d'un m&eacute;dia.
+    <p>&nbsp;
+</li>
+
+<li><b>packetCdRead</b>
+    <br>Construire le paquet Read
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td>&nbsp;</td>
+    <tr><td><i>packetCdRead(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Adresse du 1e secteur &agrave; lire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs  */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;packet_t *</i></td><td><i>/* Structure pour le paquet */</i></td></tr>
+    <tr><td><i>);</i></tD><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette commande cr&eacute;e le paquet Read permettant de lire un ou plusieurs secteurs depuis un m&eacute;dia.
+    <br><i>Remarque : Les CD-ROM ont des secteurs de 2048 octets</i>
+    <p>&nbsp;
+</li>
+
+<li><b>packetCdPreventAllowMediumRemoval</b>
+    <br>Cr&eacute;er le paquet Prevent Allow Medium Removal
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td>&nbsp;</td>
+    <tr><td><i>packetCdPreventAllowMediumRemoval(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;bool,</i></td><td><i>/* Autoriser ? */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;packet_t *</i></td><td><i>/* Structure pour le paquet */</i></td></tr>
+    <tr><td><i>);</i></tD><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette commande cr&eacute;e le paquet Prevent Allow Medium Removal permettant d'interdire ou d'autoriser le retrait du m&eacute;dia.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1d_packetcd_prbs" href="#sommaire">Probl&egrave;mes &agrave; r&eacute;soudre</a></h3>
+
+<ul>
+<li>Aucun r&eacute;el probl&egrave;me mais d'autres fonctions devront &ecirc;tre impl&eacute;ment&eacute;es</li>
+</ul>
+
+<h2><a name="v0_1_floppy" href="#sommaire">floppy v0.1</a></h2>
+
+<p>Le pilote floppy a &eacute;t&eacute; d'abord &eacute;crit par Christophe Guelff puis mis en forme par ArnaK, Inc. pour le fusionner avec les autres pilotes. Il n'est pas document&eacute; de fa&ccedil;on aussi pr&eacute;cise que les autres pilotes car je n'en connais pas aussi bien le fonctionnement.
+
+<h3><a name="v0_1_floppy_files" href="#sommaire">Fichiers</a></h3>
+
+<p><ul>
+<li>floppy.h : d&eacute;clarations et d&eacute;finitions</li>
+<li>floppy.c : code</li>
+</ul
+
+<h3><a name="v0_1_floppy_cond" href="#sommaire">Conditions de compilation</a></h3>
+
+<p>La compilation d&eacute;pend de __FLOPPY_SPECIFIC mais &eacute;galement de TESTDOS qui permet de compiler le programme sous DOS.
+
+<h3><a name="v0_1_floppy_spec" href="#sommaire">__FLOPPY_SPECIFIC</a></h3>
+
+<p>Lorsque <i>floppy.h</i> est inclus avec cette constante d&eacute;finie (__FLOPPY), seuls les types floppySpecific_t et adapterType sont d&eacute;finis. Lorsque ce fichier est inclus sans ces constantes, tout le reste est d&eacute;fini.
+
+<p>Ces types doivent en effet &ecirc;tre d&eacute;finis au d&eacute;but de block.h tandis que le reste doit &ecirc;tre d&eacute;fini &agrave; la fin.
+
+<h3><a name="v0_1_floppy_defines" href="#sommaire">Defines</a></h3>
+
+<ul>
+
+<li><b>#define DG144_HEADS 2</b>
+    <br><b>#define DG144_TRACKS 80</b>
+    <br><b>#define DG144_SPT 18</b>
+    <br><b>#define DG144_GAP3FMT 0x54</b>
+    <br><b>#define DG144_GAP3RW 0x1b</b>
+    <br><b>#define DG168_HEADS 2</b>
+    <br><b>#define DG168_TRACKS 80</b>
+    <br><b>#define DG168_SPT 21</b>
+    <br><b>#define DG168_GAP3FMT 0x0c</b>
+    <br><b>#define DG168_GAP3RW 0x1c</b>
+    <br>Ces constantes d&eacute;finissent les caract&egrave;ristiques des disquettes 1.44 Mo et 1.68 Mo.
+    <p>&nbsp;
+</li>
+
+<li><b>#define FDC_DOR 0x3f2</b>
+    <br><b>#define FDC_MSR 0x3f4</b>
+    <br><b>#define FDC_DRS 0x3f4</b>
+    <br><b>#define FDC_DATA 0x3f5</b>
+    <br><b>#define FDC_DIR 0x3f7</b>
+    <br><b>#define FDC_CCR 0x3f7</b>
+    <br>Ces constantes d&eacute;finissent les ports d'E/S utilis&eacute;s
+    <p>&nbsp;
+</li>
+
+<li><b>#define CMD_SPECIFY 0x3</b>
+    <br><b>#define CMD_WRITE 0xc5</b>
+    <br><b>#define CMD_READ 0xe6</b>
+    <br><b>#define CMD_RECAL 0x7</b>
+    <br><b>#define CMD_SENSEI 0x8</b>
+    <br><b>#define CMD_FORMAT 0x4d</b>
+    <br><b>#define CMD_SEEK 0xf</b>
+    <br><b>#define CMD_VERSION 0x10</b>
+    <br>Ces constantes d&eacute;finissent les commandes utilis&eacute;es
+    <p>&nbsp;
+</li>
+
+<li><b>#define FLOPPY_TIMEOUT 10000000</b>
+    <br>Cette constante est utilis&eacute;e par une boucle de temporisation qui constitue un timeout provisoire.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1_floppy_types" href="#sommaire">Types</a></h3>
+
+<ul>
+
+<li><b>floppyDrvGeom_t</b>
+    <br>Ce type d&eacute;crit la g&eacute;om&eacute;trie d'un disque
+    <br><i>typedef struct __floppy_drv_geom</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;u8 heads;</i>
+    <br><i>&nbsp;&nbsp;u8 tracks;</i>
+    <br><i>&nbsp;&nbsp;u8 spt;</i>
+    <br><i>} floppyDrvGeom_t;</i>
+    <p>&nbsp;
+</li>
+
+<li><b>adapterType</b>
+    <br>Ce type d&eacute;finit le type de contr&ocirc;leur.
+    <br><i>typedef enum{nec765, extAdapter} adapterType;</i>
+    <br>NEC 765 ou contr&ocirc;leur &eacute;tendu.
+    <br>Ce type est d&eacute;fini quand __FLOPPY_SPECIFIC est d&eacute;fini
+    <p>&nbsp;
+</li>
+
+<li><b>floppySpecific</b>
+    <br>Ce type d&eacute;crit les informations sp&eacute;cifiques au type floppy.
+    <br><i>typedef struct __floppy_specific</i>
+    <br><i>{</i>
+    <br><i>&nbsp;&nbsp;adapterType type;</i>
+    <bt><i>} floppySpecific_t;</i>
+    <br>Ce type est d&eacute;fini quand __FLOPPY_SPECIFIC est d&eacute;fini.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1_floppy_funcs" href="#sommaire">Fonctions</a></h3>
+
+<ul>
+
+<li><b>floppyInitDriver</b>
+    <br>Initialiser le pilote
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyInitDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;void</i></tD><td>&nbsp;</td></tr>
+    <tR><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>&nbsp;
+</lI>
+
+<li><b>floppyCleanupDriver</b>
+    <br>D&eacute;charger le pilote.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>void</i></td><td><i>&nbsp;</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;floppyCleanupDriver(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;void</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction s'occupe de d&eacute;sallouer la m&eacute;moire allou&eacute;e par le pilote (mais pas la m&eacute;moire qu'il occupe).
+    <p>&nbsp;
+</li>
+
+<li><b>floppyGetInf</b>
+    <br>Obtenir des informations sur un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><tD><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyGetInf(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t, </i></tD><tD><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;disk_t *</i></td><td><i>/* Structure pour le r&eacute;sultat */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>floppyInit</b>
+    <bR>Initialiser un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyInit(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>Cette fonction initialise le disque indiqu&eacute;. Elle doit &ecirc;tre appel&eacute; lorsqu'un disque est chang&eacute;.
+    <p>&nbsp;
+</li>
+
+<li><b>floppyRead</b>
+    <bR>Lire depuis un disque.
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyRead(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; lire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; enregistrer les secteurs lus */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>floppyWrite</b>
+    <bR>&Eacute;crire vers un disque
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyWrite(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* ID du disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32,</i></td><td><i>/* Nombre de secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;lbaAddress_t,</i></td><td><i>/* Adresse logique du premier secteur */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u8 *</i></td><td><i>/* Tampon m&eacute;moire o&ugrave; sont plac&eacute;s les secteurs &agrave; &eacute;crire */</i></td></tr>
+    <tr><td><i>);</i></td><td>&nbsp;</td></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>floppyGetSize</b>
+    <br>Obtenir la taille d'un disque en blocs de 512 octets.
+    <br><table cols=2 border=0 width=60%>
+    <tr><tD><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyGetSize(</i></td><tD>&nbsp;</td></tr>
+    <tr><tD><i>&nbsp;&nbsp;diskID_t,</i></td><td><i>/* Disque */</i></td></tr>
+    <tr><td><i>&nbsp;&nbsp;u32 *</i></td><td><i>/* Emplacement pour le r&eacute;sultat */</i></td></tr>
+    <tr><td><i>}</i></td><td>&nbsp;</tD></tr>
+    </table>
+    <p>&nbsp;
+</li>
+
+<li><b>floppyLock</b>
+    <br>Bloquer le m&eacute;dia (interdire le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyLock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction renvoie toujours BLOCK_ERR_UNIMPLEMENTED.
+    <p>&nbsp;
+</li>
+
+<li><b>floppyUnlock</b>
+    <br>D&eacute;bloquer le m&eacute;dia (autoriser le retrait)
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>u8</i></td><td><i>/* Retour : code d'erreur */</i></td></tr>
+    <tr><td><i>floppyUnlock(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction renvoie toujours BLOCK_ERR_UNIMPLEMENTED
+    <p>&nbsp;
+</li>
+
+<li><b>floppyIsChanged</b>
+    <br>Le m&eacute;dia a-t-il chang&eacute; ?
+    <br><table cols=2 border=0 width=60%>
+    <tr><td><i>s8</i></td><td><i>/* Retour : -(code d'erreur), 0 (non) ou 1 (oui) */</i></td></tr>
+    <tr><td><i>floppyIsChanged(</i></td><td>&nbsp;</td></tr>
+    <tr><td><i>&nbsp;&nbsp;diskID_t</i></td><td><i>/* Disque */</i></td></tr>
+    </table>
+    <p>Cette fonction permet de savoir si le m&eacute;dia a chang&eacute; depuis la derni&egrave;re initialisation. Il doit dans ce cas &ecirc;tre initialis&eacute; de nouveau.
+    <p>&nbsp;
+</li>
+
+<li><b>void floppyLowReset(void);</b>
+    <br><b>void floppyLowMotorOn(void);</b>
+    <br><b>void floppyLowMotorOff(void);</b>
+    <br><b>void floppyLowRecalibrate(void);</b>
+    <br><b>bool floppyLowSeek(u8 track);</b>
+    <br><b>bool floppyLowLogDisk(floppyDrvGeom_t *g);</b>
+    <br><b>bool floppyLowReadBlock(u32 block,u8 *blockBuff);</b>
+    <br><b>bool floppyLowWriteBlock(u32 block,u8 *blockBuff);</b>
+    <br><b>bool floppyLowRW(u32 block, u8 *blockBuff, bool read);</b>
+    <br><b>void floppyLowSendByte(u8);</b>
+    <br><b>s8 floppyLowGetByte(void);</b>
+    <br><b>bool floppyLowWaitFDC(bool);</b>
+    <br><b>void floppyLowIRQ6(void);</b>
+    <br><b>void floppyLowConvertBlockToHTS(u32 block, u8 *head, u8 *track, u8 *sector);</b>
+    <br>Ces fonctions sont celles du pilote d'origine de Christophe Guelff.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1_floppy_vars" href="#sommaire">Variables</a></h3>
+
+<ul>
+
+<li><b>floppyDisksList</b>
+    <br>Liste des disques
+    <br><i>extern disksList_t floppyDisksList;</i>
+    <br>Dans la version actuelle, cette liste ne contient qu'un disque.
+    <p>&nbsp;
+</li>
+
+</ul>
+
+<h3><a name="v0_1_floppy_prbs" href="#sommaire">Probl&egrave;mes &agrave; r&eacute;soudre</a></h3>
+
+<ul>
+<li>Appronfondir les tests</li>
+<li>Impl&eacute;menter un meilleur syst&egrave;me de timeout (il faut attendre une fonction d'OWL qui permette cela)</li>
+<li>Reste &agrave; tester l'ensemble avec les fonctions d'OWL et non les fonctions du DOS (car certaines fonctions sont sp&eacute;cifiques au syst&egrave;me)</li>
+</ul>
+
+<h2><a name="exemples" href="#sommaire">Exemples</a></h2>
+
+<p>Utiliser ces pilotes ne n&eacute;cessite pas de conna&icirc;tre tout ce qui a &eacute;t&eacute; pr&eacute;sent&eacute;. Pour mieux comprendre comment les utiliser, vous pouvez consulter les programmes d'exemples suivants :
+
+<ul>
+<li><b>detect.exe</b>, <i>detect.c</i> : D&eacute;tection des disques et affichage de la liste</li>
+<li><b>lockcd.exe</b>, <i>lockcd.c</i> : Bloquer et d&eacute;bloquer les lecteurs de CD</li>
+<li><b>changed.exe</b>, <i>changed.c</i> : V&eacute;rification en boucle (avec getch apr&egrave;s chaque v&eacute;rification) du lecteur de disquette pour savoir si la disquette a chang&eacute; (et initialisation dans ce cas)</li>
+<li><b>hex.exe</b>, <i>hex.c</i> : Affichage du contenu d'un disque (par pages de 128 octets)</li>
+</ul>
+
+<h2><a name="auteurs" href="#sommaire">Auteurs</a></h2>
+
+<table cols=2 border=1 width=100%>
+<tr><td><i>block v0.1, v0.2, v0.2b, v0.2c, v0.3, v0.3b, v0.3c, v0.3d</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tR><td><i>ide v0.1, v0.2, v0.2b, v0.3c, v0.2d</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tr><td><i>packet v0.1, v0.1b</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tr><td><i>packetcd v0.1, v0.1b, v0.1c</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tr><td><i>floppy v0.1</i></td><td><a href="mailto:ChristopheGuelff@aol.com">Christophe Guelff</a> et <a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tr><td><i>Documentation v0.1, v0.2, v0.3, v0.4, v0.5, v0.6</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+<tr><td><i>Exemples</i></td><td><a href="mailto:arnak@arnak.fr.st">ArnaK, Inc.</a></td></tr>
+</table>
+
+<h2><a name="voiraussi" href="#sommaire">Voir aussi</a></h2>
+
+<ul>
+<li><a href="voir.php3?page=docs%2Fprog_sys%2Fstockage%2Fide">Protocole IDE</a>
+</li>
+<li><a href="voir.php3?page=docs%2Fprog_sys%2Fboot%2Fbootload">Fonctionnement d'un chargeur de boot</a> et description de la table des partitions et de la structure des partitions &eacute;tendues DOS
+</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+addition de 28197410 et 0
+0 + 0 + 0 = 0
+donc pose 0 retiens 0
+1 + 0 + 0 = 1
+donc pose 1 retiens 0
+4 + 0 + 0 = 4
+donc pose 4 retiens 0
+7 + 0 + 0 = 7
+donc pose 7 retiens 0
+9 + 0 + 0 = 9
+donc pose 9 retiens 0
+1 + 0 + 0 = 1
+donc pose 1 retiens 0
+8 + 0 + 0 = 8
+donc pose 8 retiens 0
+2 + 0 + 0 = 2
+donc pose 2 retiens 0
+Donc 28197410
++    0 = 
+     28197410
+
+
+
+addition de 56394820 et 28197410
+0 + 0 + 0 = 0
+donc pose 0 retiens 0
+2 + 1 + 0 = 3
+donc pose 3 retiens 0
+8 + 4 + 0 = 12
+donc pose 2 retiens 1
+4 + 7 + 1 = 12
+donc pose 2 retiens 1
+9 + 9 + 1 = 19
+donc pose 9 retiens 1
+3 + 1 + 1 = 5
+donc pose 5 retiens 0
+6 + 8 + 0 = 14
+donc pose 4 retiens 1
+5 + 2 + 1 = 8
+donc pose 8 retiens 0
+Donc 56394820
++    28197410 = 
+     84592230
+
+
+
+addition de 112789640 et 84592230
+0 + 0 + 0 = 0
+donc pose 0 retiens 0
+4 + 3 + 0 = 7
+donc pose 7 retiens 0
+6 + 2 + 0 = 8
+donc pose 8 retiens 0
+9 + 2 + 0 = 11
+donc pose 1 retiens 1
+8 + 9 + 1 = 18
+donc pose 8 retiens 1
+7 + 5 + 1 = 13
+donc pose 3 retiens 1
+2 + 4 + 1 = 7
+donc pose 7 retiens 0
+1 + 8 + 0 = 9
+donc pose 9 retiens 0
+1 + 0 + 0 = 1
+donc pose 1 retiens 0
+Donc 112789640
++    84592230 = 
+     197381870
+
+
+
+addition de 7218536960 et 197381870
+0 + 0 + 0 = 0
+donc pose 0 retiens 0
+6 + 7 + 0 = 13
+donc pose 3 retiens 1
+9 + 8 + 1 = 18
+donc pose 8 retiens 1
+6 + 1 + 1 = 8
+donc pose 8 retiens 0
+3 + 8 + 0 = 11
+donc pose 1 retiens 1
+5 + 3 + 1 = 9
+donc pose 9 retiens 0
+8 + 7 + 0 = 15
+donc pose 5 retiens 1
+1 + 9 + 1 = 11
+donc pose 1 retiens 1
+2 + 1 + 1 = 4
+donc pose 4 retiens 0
+7 + 0 + 0 = 7
+donc pose 7 retiens 0
+Donc 7218536960
++    197381870 = 
+     7415918830
+
+
+
+addition de 14437073920 et 7415918830
+0 + 0 + 0 = 0
+donc pose 0 retiens 0
+2 + 3 + 0 = 5
+donc pose 5 retiens 0
+9 + 8 + 0 = 17
+donc pose 7 retiens 1
+3 + 8 + 1 = 12
+donc pose 2 retiens 1
+7 + 1 + 1 = 9
+donc pose 9 retiens 0
+0 + 9 + 0 = 9
+donc pose 9 retiens 0
+7 + 5 + 0 = 12
+donc pose 2 retiens 1
+3 + 1 + 1 = 5
+donc pose 5 retiens 0
+4 + 4 + 0 = 8
+donc pose 8 retiens 0
+4 + 7 + 0 = 11
+donc pose 1 retiens 1
+1 + 0 + 1 = 2
+donc pose 2 retiens 0
+Donc 14437073920
++    7415918830 = 
+     21852992750
+
+
+
+addition de 28874147840 et 21852992750
+addition de 21852992750 et 28874147840
+ + 0 + 0 = -1
+donc pose -1 retiens 0
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+5 + 8 + 0 = 13
+donc pose 3 retiens 1
+7 + 7 + 1 = 15
+donc pose 5 retiens 1
+2 + 4 + 1 = 7
+donc pose 7 retiens 0
+9 + 1 + 0 = 10
+donc pose 0 retiens 1
+9 + 4 + 1 = 14
+donc pose 4 retiens 1
+2 + 7 + 1 = 10
+donc pose 0 retiens 1
+5 + 8 + 1 = 14
+donc pose 4 retiens 1
+8 + 8 + 1 = 17
+donc pose 7 retiens 1
+1 + 2 + 1 = 4
+donc pose 4 retiens 0
+2 + 0 + 0 = 2
+donc pose 2 retiens 0
+Donc 21852992750
++    28874147840 = 
+     24740407534
+
+
+
+addition de 461986365440 et 24740407534
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+4 + 3 + 0 = 7
+donc pose 7 retiens 0
+4 + 5 + 0 = 9
+donc pose 9 retiens 0
+5 + 7 + 0 = 12
+donc pose 2 retiens 1
+6 + 0 + 1 = 7
+donc pose 7 retiens 0
+3 + 4 + 0 = 7
+donc pose 7 retiens 0
+6 + 0 + 0 = 6
+donc pose 6 retiens 0
+8 + 4 + 0 = 12
+donc pose 2 retiens 1
+9 + 7 + 1 = 17
+donc pose 7 retiens 1
+1 + 4 + 1 = 6
+donc pose 6 retiens 0
+6 + 2 + 0 = 8
+donc pose 8 retiens 0
+4 + 0 + 0 = 4
+donc pose 4 retiens 0
+Donc 461986365440
++    24740407534 = 
+     486726772974
+
+
+
+addition de 923972730880 et 486726772974
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+8 + 7 + 0 = 15
+donc pose 5 retiens 1
+8 + 9 + 1 = 18
+donc pose 8 retiens 1
+0 + 2 + 1 = 3
+donc pose 3 retiens 0
+3 + 7 + 0 = 10
+donc pose 0 retiens 1
+7 + 7 + 1 = 15
+donc pose 5 retiens 1
+2 + 6 + 1 = 9
+donc pose 9 retiens 0
+7 + 2 + 0 = 9
+donc pose 9 retiens 0
+9 + 7 + 0 = 16
+donc pose 6 retiens 1
+3 + 6 + 1 = 10
+donc pose 0 retiens 1
+2 + 8 + 1 = 11
+donc pose 1 retiens 1
+9 + 4 + 1 = 14
+donc pose 4 retiens 1
+Donc 923972730880
++    486726772974 = 
+     1410699503854
+
+
+
+addition de 3695890923520 et 1410699503854
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+2 + 5 + 0 = 7
+donc pose 7 retiens 0
+5 + 8 + 0 = 13
+donc pose 3 retiens 1
+3 + 3 + 1 = 7
+donc pose 7 retiens 0
+2 + 0 + 0 = 2
+donc pose 2 retiens 0
+9 + 5 + 0 = 14
+donc pose 4 retiens 1
+0 + 9 + 1 = 10
+donc pose 0 retiens 1
+9 + 9 + 1 = 19
+donc pose 9 retiens 1
+8 + 6 + 1 = 15
+donc pose 5 retiens 1
+5 + 0 + 1 = 6
+donc pose 6 retiens 0
+9 + 1 + 0 = 10
+donc pose 0 retiens 1
+6 + 4 + 1 = 11
+donc pose 1 retiens 1
+3 + 1 + 1 = 5
+donc pose 5 retiens 0
+Donc 3695890923520
++    1410699503854 = 
+     5106590427374
+
+
+
+addition de 14783563694080 et 5106590427374
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+8 + 7 + 0 = 15
+donc pose 5 retiens 1
+0 + 3 + 1 = 4
+donc pose 4 retiens 0
+4 + 7 + 0 = 11
+donc pose 1 retiens 1
+9 + 2 + 1 = 12
+donc pose 2 retiens 1
+6 + 4 + 1 = 11
+donc pose 1 retiens 1
+3 + 0 + 1 = 4
+donc pose 4 retiens 0
+6 + 9 + 0 = 15
+donc pose 5 retiens 1
+5 + 5 + 1 = 11
+donc pose 1 retiens 1
+3 + 6 + 1 = 10
+donc pose 0 retiens 1
+8 + 0 + 1 = 9
+donc pose 9 retiens 0
+7 + 1 + 0 = 8
+donc pose 8 retiens 0
+4 + 5 + 0 = 9
+donc pose 9 retiens 0
+1 + 0 + 0 = 1
+donc pose 1 retiens 0
+Donc 14783563694080
++    5106590427374 = 
+     19890154121454
+
+
+
+addition de 118268509552640 et 19890154121454
+0 + 4 + 0 = 4
+donc pose 4 retiens 0
+4 + 5 + 0 = 9
+donc pose 9 retiens 0
+6 + 4 + 0 = 10
+donc pose 0 retiens 1
+2 + 1 + 1 = 4
+donc pose 4 retiens 0
+5 + 2 + 0 = 7
+donc pose 7 retiens 0
+5 + 1 + 0 = 6
+donc pose 6 retiens 0
+9 + 4 + 0 = 13
+donc pose 3 retiens 1
+0 + 5 + 1 = 6
+donc pose 6 retiens 0
+5 + 1 + 0 = 6
+donc pose 6 retiens 0
+8 + 0 + 0 = 8
+donc pose 8 retiens 0
+6 + 9 + 0 = 15
+donc pose 5 retiens 1
+2 + 8 + 1 = 11
+donc pose 1 retiens 1
+8 + 9 + 1 = 18
+donc pose 8 retiens 1
+1 + 1 + 1 = 3
+donc pose 3 retiens 0
+1 + 0 + 0 = 1
+donc pose 1 retiens 0
+Donc 118268509552640
++    19890154121454 = 
+     138158663674094
+
+
+
+138158663674094
+addition de 9801230 et 14098705
+addition de 14098705 et 9801230
+5 + 0 + 0 = 5
+donc pose 5 retiens 0
+0 + 3 + 0 = 3
+donc pose 3 retiens 0
+7 + 2 + 0 = 9
+donc pose 9 retiens 0
+8 + 1 + 0 = 9
+donc pose 9 retiens 0
+9 + 0 + 0 = 9
+donc pose 9 retiens 0
+0 + 8 + 0 = 8
+donc pose 8 retiens 0
+4 + 9 + 0 = 13
+donc pose 3 retiens 1
+1 + 0 + 1 = 2
+donc pose 2 retiens 0
+Donc 14098705
++    9801230 = 
+     23899935
+
+
+
+23899935

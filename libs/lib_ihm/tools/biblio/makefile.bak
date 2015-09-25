@@ -1,0 +1,22 @@
+CC=gcc
+CFLAG=-Wall -g
+IFLAG= -I. -I./include
+PROG_NAME=biblio.exe
+PROG_SRC=biblio.c
+LIB_SRC=tkgui\tkgui.cc
+LIB=tkgui.o -lalleg
+
+all: $(PROG_NAME)
+
+$(PROG_NAME):
+	$(CC) -c $(IFLAG) $(LIB_SRC) $(CFLAG)
+	$(CC) $(IFLAG) $(PROG_SRC) -o $(PROG_NAME) $(CFLAG) $(LIB)
+
+clean:
+	del *.o 
+	del $(PROG_NAME)
+      
+     
+
+
+

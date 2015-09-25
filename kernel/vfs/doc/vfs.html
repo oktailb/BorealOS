@@ -1,0 +1,556 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-15">
+	<TITLE>Pilotes bloc de DreamOS</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 6.0  (Linux)">
+	<META NAME="CREATED" CONTENT="20020124;21183100">
+	<META NAME="CHANGED" CONTENT="20020311;2320600">
+	<STYLE>
+	<!--
+		@page { size: 21cm 29.7cm; margin: 2cm }
+	-->
+	</STYLE>
+</HEAD>
+<BODY>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999" STYLE="page-break-before: always">
+		<COL WIDTH=128*>
+		<COL WIDTH=128*>
+		<TR>
+			<TD WIDTH=50%>
+				<P ALIGN=LEFT><FONT COLOR="#ffffff"><B>/OWL/serverStorage/vfs/doc/vfs.html</B></FONT></P>
+			</TD>
+			<TD WIDTH=50%>
+				<P ALIGN=RIGHT><FONT COLOR="#ffffff"><B>Projet de documentation
+				de DreamOS</B></FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999">
+		<COL WIDTH=256*>
+		<TR>
+			<TD WIDTH=100%>
+				<P ALIGN=CENTER><FONT COLOR="#ffffff"><FONT SIZE=6><B>COUCHE VFS
+				D'OWL</B></FONT></FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<CENTER>
+	<TABLE WIDTH=90% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999">
+		<COL WIDTH=256*>
+		<TR>
+			<TD WIDTH=100%>
+				<P ALIGN=CENTER><FONT COLOR="#ffffff">Description de la structure
+				du vfs d'OWL et de sont utilisation.<BR>&nbsp;</FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0>
+		<COL WIDTH=72*>
+		<COL WIDTH=184*>
+		<TR>
+			<TD WIDTH=28%>
+				<P><B>Auteur originel :</B> 
+				</P>
+				<BLOCKQUOTE>LECOQ Vincent <BR><A HREF="mailto:arnak@arnak.fr.st">arnak@arnak.fr.st</A>
+				<BR><A HREF="http://www.arnak.fr.st/">http://www.arnak.fr.st</A> 
+				</BLOCKQUOTE>
+				<P><B>Auteurs :</B> 
+				</P>
+			</TD>
+			<TD WIDTH=72%>
+				<P><B>Version : </B>0.1 <BR><B>Date de cr&eacute;ation du fichier
+				:</B> 24 Janvier 2002 <BR><B>Date de derni&egrave;re mise &agrave;
+				jour du fichier :</B> 17 f&eacute;vrier 2002 
+				</P>
+				<P><B>R&eacute;visions :</B> <BR><BR><BR>
+				</P>
+				<P><B>TODO :</B> 
+				</P>
+				<P>Terminer la description des champs et fonctions.</P>
+				<P>Corriger les noms selon les derni&egrave;res modifs.</P>
+				<P>Maintenir ce document &agrave; jour.</P>
+				<P>Ameillorer la pr&eacute;sentation.</P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR>
+<H2><A NAME="sommaire"></A>Sommaire</H2>
+<BLOCKQUOTE><A HREF="#intro">Introduction</A> <BR><A HREF="#present">Pr&eacute;sentation
+g&eacute;n&eacute;rale</A> 
+</BLOCKQUOTE>
+<BLOCKQUOTE><BR><A HREF="#v0_3_block">VFS 0.1</A> 
+</BLOCKQUOTE>
+<BLOCKQUOTE STYLE="margin-left: 3cm"><A HREF="#v0_3_block_files">Fichiers</A>
+<BR><A HREF="#v0_3_block_cond">Conditions de compilation</A> <BR><A HREF="#v0_3_block_defines">Defines</A>
+<BR><A HREF="#v0_3_block_types">Types et donn&eacute;es</A>
+<BR><A HREF="#v0_3_block_funcs">Fonctions</A> <BR><A HREF="#v0_3_block_vars">Variables</A>
+<BR><A HREF="#v0_3_block_errs">Erreurset warnings</A> <BR><A HREF="#v0_3_block_deps">D&eacute;pendances</A>
+<BR><A HREF="#v0_3_block_prbs">Probl&egrave;mes &agrave; r&eacute;soudre</A>
+</BLOCKQUOTE>
+<BLOCKQUOTE><BR><A HREF="#auteurs">Auteurs</A> <BR><A HREF="#voiraussi">Voir
+aussi</A> 
+</BLOCKQUOTE>
+<H2><A HREF="#sommaire" NAME="intro">Introduction</A></H2>
+<P>Cette documentation a pour but de pr&eacute;senter le
+fonctionnement du VFS d'OWL et de d&eacute;crire le plus pr&eacute;cisement
+possible la technique d'&eacute;criture d'un pilote de syst&egrave;me
+de fichiers.</P>
+<H2><A HREF="#sommaire" NAME="present">Pr&eacute;sentation g&eacute;n&eacute;rale</A></H2>
+<P>Le VFS est une couche dite d'abstraction. Il a pour but
+d'interfacer les appels syst&egrave;mes de traitement des fichiers
+avec les pilotes de p&eacute;riph&eacute;riques et de protocoles. Son
+principe de fonctionnement est similaire &agrave; un &laquo;&nbsp;wrapper&nbsp;&raquo;
+mais dans le sens inverse : il ne s'agit pas de concentrer les apples
+de divers syst&egrave;mes vers une fonctionnalit&eacute; homog&egrave;ne
+mais de d&eacute;multiplexer un canal unique sur plusieurs syst&egrave;mes
+h&eacute;t&eacute;rog&egrave;nes.</P>
+<H2><A HREF="#sommaire" NAME="v0_3_block">VFS 0.1</A></H2>
+<H3><A HREF="#sommaire" NAME="v0_3_block_files">Fichiers</A></H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">vfs/vfs.h : d&eacute;clarations et
+	d&eacute;finitions</P>
+	<LI><P STYLE="margin-bottom: 0cm">vfs/filesystems.h : liens vers les
+	pilotes de syst&egrave;mes de fichiers 
+	</P>
+	<LI><P>vfs/vfs.c : code 
+	</P>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_cond">Conditions de
+compilation</A></H3>
+<P>La compilation du vfs d&eacute;pend des #define suivants : <BR>-
+FLOPPY_DRIVER <BR>- IDE_HD_DRIVER <BR>- IDE_CD_DRIVER 
+</P>
+<P>Ces #define d&eacute;finissent respectivement le support des
+pilotes floppy, ide (disques durs) et ide (CD-ROM).</P>
+<H3><A HREF="#sommaire" NAME="v0_3_block_defines">Defines</A></H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>#define VFS_ERR_UNKNOWN_DRIVER
+	0<BR>#define VFS_ERR_UNKNOWN_DEVICE 1<BR><I>Voir </I></B><A HREF="#v0_3_block_errs"><B><I>Erreurs</I></B></A><B>
+	</B>
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm"><B>#define VFS_WARNING_NO_FSTAB
+	0<BR>#define VFS_WARNING_INVALID_MAGIC_NUMBER 1</B></P>
+</UL>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>#define NB_KNOWN_FS 256</B></P>
+</UL>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<UL>
+	<LI><P><B>#define O_RDONLY 1<BR>#define O_WRONLY 2<BR>#define O_RDWR
+	4<BR>#define O_CREAT 8<BR>#define O_EXCL 16<BR>#define O_NOCTTY
+	32<BR>#define O_TRUNC 64<BR>#define O_APPEND 128<BR>#define
+	O_NONBLOCK 256<BR>#define O_NDELAY 512<BR>#define O_SYNC
+	1024<BR>#define O_NOFOLLOW 2048<BR>#define O_DIRECTORY 4096<BR>#define
+	O_LARGEFILE 8192</B></P>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_types">Types et donn&eacute;es</A></H3>
+<UL>
+	<LI><P><B>FS_DRIVER_ERROR</B> <BR>Ensemble de bits d&eacute;finissant
+	l'&eacute;tat d'un volume en cas d'erreur. <BR><I>typedef
+	struct<BR>{<BR>unsigned no_media:1;<BR>unsigned
+	write_err:1;<BR>unsigned read_err:1;<BR>unsigned fs_err:1;<BR>unsigned
+	unknow:4;<BR><BR>}FS_DRIVER_ERROR; </I>
+	</P>
+	<P><I>no_media : Ce bit est &agrave; 1 si le p&eacute;riph&eacute;rique
+	ne contient aucun m&eacute;dia. Concerne essentiellement les
+	p&eacute;riph&eacute;riques amovibles.</I></P>
+	<P><I>write_err: Le pilote concernant le volume &agrave; renvoy&eacute;
+	une erreur d'&eacute;criture.</I></P>
+	<P><I>read_err :Le pilote concernant le volume &agrave; renvoy&eacute;
+	une erreur de lecture.</I></P>
+	<P><I>fs_err : Erreur interne du pilote de syst&egrave;me de fichier
+	-&gt; FS incoh&eacute;rent ? Besoin d'un FSCK ?</I></P>
+	<LI><P><B>DRIVER</B><BR>Interface entre le VFS et un pilote de
+	syst&egrave;me de fichier.</P>
+</UL>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">typedef struct /*
+toutes les fonctions d'acc&egrave;s aux donn&eacute;es de mani&egrave;re
+standard, quelque soit le pilote =&gt; a initialiser par celui-ci !
+*/<BR>{<BR>u32 (*std_open)(u8* fname, u16 flag,u16 mode);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u8 (*std_close)(u32
+fd);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u32 (*std_tell)(u32
+fd);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u16 (*std_seek)(u32
+fd, u32 offset);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u8 (*std_eof)(u32
+fd);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u32 (*std_read)(u32
+fd, void *buf, u32 size);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u32 (*std_write)(u32
+fd, void *buf, u32 size);<BR>u16 (*std_chdir)(u8 *newdir);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm">u8**
+(*sdt_scandir)(u8 * dir);<BR>u16 (*std_init)(u16 device);<BR>u16
+(*std_quit);</P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm; font-variant: normal">
+<I>FS_DRIVER_ERROR error; <BR>}DRIVER;</I></P>
+<P STYLE="margin-left: 2cm; margin-bottom: 0cm"><BR>
+</P>
+<P STYLE="margin-bottom: 0cm; font-variant: normal; font-style: normal">
+Il s'agit d'un ensemble de pointeurs vers les fonctions du pilote de
+syst&egrave;me de fichier. Lorsqu'un pilote s'initialise, il doit
+renvoyer au vfs un DRIVER. Celui-ci permettra d'interfacer le pilote
+de syst&egrave;me de fichier avec le VFS. Cette fonction
+d'initialisation doit &ecirc;tre distincte d'une autre fonction
+d'initialisation permettant de cr&eacute;er une instance du pilote
+pour un volume de donn&eacute;es pr&eacute;cis.( Voir section <U><I>&Eacute;crire
+un pilote de syst&egrave;me de fichiers</I></U> )</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<UL>
+	<LI><P><B>MOUNT_POINT</B> <BR><I>struct MOUNT /* tout ce qui definit
+	un point de montage */<BR>{<BR><BR>struct MOUNT* next;<BR><BR>u8*
+	path; /*le r&eacute;pertoire de montage */<BR>u16 device; /* le
+	p&eacute;riph&eacute;rique sur le quel on peut le trouver */<BR>u8*
+	type; /* le type de FS */<BR>DRIVER driver; /* l'acc&egrave;s aux
+	fonctions du pilote */<BR><BR>unsigned amovible:1; /* est il
+	amovible ? */<BR>unsigned open:1; /* si oui, la trappe est elle
+	ferm&eacute;e ? */<BR>unsigned present:1; /* est il physiquement
+	pr&eacute;sent ? */<BR>unsigned lock:1; /* le tiroir est il bloque
+	ou peut on sortir le media ? */<BR>unsigned unused:4;<BR><BR>};</I><BR><BR>typedef
+	struct MOUNT MOUNT_POINT;<BR><BR>Ce type d&eacute;signe un point de
+	montage pour un volume. Il comprends toutes le informations
+	d&eacute;crivant un point de montage et ses options. <BR><BR><BR>
+	</P>
+	<LI><P><B>u8* known_fs[256];</B></P>
+	<P><SPAN STYLE="font-weight: medium"><FONT SIZE=3 STYLE="font-size: 13pt">u8*
+	known_fs[256]={<BR>/*0-f*/
+	&quot;null&quot;,&quot;fat&quot;,&quot;xenix&quot;,&quot;xenix&quot;,&quot;fat&quot;,&quot;extend&quot;,&quot;fat&quot;,&quot;ntfs&quot;,&quot;aix&quot;,&quot;aix&quot;,&quot;ez-boot&quot;,&quot;vfat&quot;,&quot;vfat&quot;,&quot;?&quot;,&quot;vfat&quot;,&quot;vfat&quot;,<BR>/*10-1f*/
+	&quot;opus&quot;,&quot;fat&quot;,&quot;?&quot;,&quot;&quot;,&quot;?&quot;,&quot;fat&quot;,&quot;?&quot;,&quot;fat&quot;,&quot;ntfs&quot;,&quot;swap&quot;,&quot;?&quot;,&quot;?&quot;,&quot;vfat&quot;,&quot;vfat&quot;,&quot;vfat&quot;,&quot;?&quot;,<BR>/*20-2f*/
+	&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;nec&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*30-3f*/
+	&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;plan9&quot;,&quot;?&quot;,&quot;?&quot;,&quot;resume&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*40-4f*/
+	&quot;venix&quot;,&quot;PPCboot&quot;,&quot;sfs&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;qnx&quot;,&quot;qnx&quot;,&quot;qnx&quot;,<BR>/*50-5f*/
+	&quot;ontrack&quot;,&quot;ontrack&quot;,&quot;cp/m&quot;,&quot;ontrack&quot;,&quot;ontrack&quot;,&quot;ez-drive&quot;,&quot;golen-bow&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;priam-edisk&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*60-6f*/
+	&quot;?&quot;,&quot;speedstor&quot;,&quot;?&quot;,&quot;hurd&quot;,&quot;novell&quot;,&quot;novell&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*70-7f*/
+	&quot;mult&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;pc/ix&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*80-8f*/
+	&quot;minix&quot;,&quot;minix&quot;,&quot;linux-swap&quot;,&quot;fat&quot;,&quot;extend-linux&quot;,&quot;vol&quot;,&quot;vol&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;lvm&quot;,&quot;?&quot;,<BR>/*90-9f*/
+	&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;amoeba&quot;,&quot;amoebabbt&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;bsd/os&quot;,<BR>/*a0-af*/
+	&quot;hibernation&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;bsd/386&quot;,&quot;openbsd&quot;,&quot;nextstep&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*b0-bf*/
+	&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;bsdi&quot;,&quot;bsdi-swap&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*c0-cf*/
+	&quot;?&quot;,&quot;drdos&quot;,&quot;?&quot;,&quot;?&quot;,&quot;drdos&quot;,&quot;?&quot;,&quot;drdos&quot;,&quot;syrinx&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*d0-df*/
+	&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;data&quot;,&quot;cp/m&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*e0-ef*/
+	&quot;?&quot;,&quot;fat&quot;,&quot;?&quot;,&quot;fat&quot;,&quot;speedstor&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;beos&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,<BR>/*f0-ff*/
+	&quot;?&quot;,&quot;speedstor&quot;,&quot;fat&quot;,&quot;?&quot;,&quot;speedstor&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;?&quot;,&quot;auto&quot;,&quot;lanstep&quot;,&quot;bbt&quot;<BR>};</FONT></SPAN><B><BR></B><BR>Entr&eacute;e
+	de la liste des types de partitions connus 
+	</P>
+	<LI><P><B>DRIVER* known_fs_drivers[256]</B><BR>. 
+	</P>
+	<P STYLE="margin-bottom: 0cm">&nbsp; 
+	</P>
+	<LI><P><B>MOUNT_POINT** mounts; </B>
+	</P>
+	<P><B>/* l'ensemble des points de montages =&gt; a remplacer par une
+	liste chainee, se sera plus simple pour les changements */</B></P>
+	<LI><P><B>typedef struct file_descriptor* fd;</B></P>
+	<P><B>struct<BR>{<BR>u8* name; // nom complet du fichier<BR>u8*
+	path; // PATH du fichier<BR>MOUNT_POINT* mount; // volume au quel il
+	appartient<BR>u8* data; // pointeur sur les donnes du fichier<BR>u32
+	size; // taille du fichier<BR>u16 rights; // droits UNIX du
+	fichier<BR>u16 access; // ?<BR>u8 lock; // fichier utilise
+	?<BR><BR>}file_descriptor;<BR><BR>typedef struct file_descriptor*
+	fd;</B></P>
+	<LI><P><B>fd* open_files_list; </B>
+	</P>
+	<P><B>// liste des fichiers ouverts</B></P>
+	<LI><P><B>u16 nb_mounts;</B></P>
+	<P><B>/* nombres de devices montes */<BR></B><BR><BR>
+	</P>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_funcs">Fonctions</A></H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>init_vfs</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>mount</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>umount</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>open</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>close</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>ftell</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>fseek</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>eof</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>read</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>write</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>chdir</B> 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><B>scandir</B> 
+	</P>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_vars">Variables</A></H3>
+<UL>
+	<LI><P>u8* current_path<BR><BR><BR>
+	</P>
+	<LI><P><B>MOUNT_POINT** mounts</B> <BR><BR><BR>
+	</P>
+	<LI><P>file_descriptor* open_files_list<BR><BR><BR>
+	</P>
+	<LI><P>u32 nb_files_open<BR><BR><BR>
+	</P>
+	<LI><P>u16 nb_mounts<BR><BR><BR>
+	</P>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_errs">Erreurs et warnings</A></H3>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0>
+		<COL WIDTH=91*>
+		<COL WIDTH=165*>
+		<TR>
+			<TD WIDTH=36%>
+				<P>VFS_ERR_UNKNOWN_DRIVER</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P>Est renvoy&eacute; si le pilote de syst&egrave;me de fichiers
+				n'est pas support&eacute; par le vfs. 
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P>VFS_ERR_UNKNOWN_DEVICE</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P>Est renvoy&eacute;e si le vfs ne reconnait pas le type de
+				p&eacute;riph&eacute;rique.</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P>VFS_WARNING_NO_FSTAB</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P>Est envoy&eacute; si le p&eacute;riph&eacute;rique racine ne
+				contient pas de fstab. Ce n'est pas drammatique mais c'est
+				anormal.</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P>VFS_WARNING_INVALID_MAGIC_NUMBER</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P>Indique que le p&eacute;riph&eacute;rique ne concorde pas avec
+				le type de pilote de syst&egrave;me de fichier indiqu&eacute;. Si
+				c'est le cas on risque de rendre le syst&egrave;me instable.</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+		<TR>
+			<TD WIDTH=36%>
+				<P><BR>
+				</P>
+			</TD>
+			<TD WIDTH=64%>
+				<P><BR>
+				</P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<H3><A HREF="#sommaire" NAME="v0_3_block_cache">Cache</A></H3>
+<P><BR><BR>
+</P>
+<H3><A HREF="#sommaire" NAME="v0_3_block_deps">D&eacute;pendances</A></H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">vfs.c 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0cm">vfs.h 
+		</P>
+		<UL>
+			<LI><P STYLE="margin-bottom: 0cm">drivers/block.h</P>
+			<LI><P STYLE="margin-bottom: 0cm">serverText.h</P>
+			<LI><P STYLE="margin-bottom: 0cm">string.h</P>
+			<LI><P STYLE="margin-bottom: 0cm">filesystems.h</P>
+			<UL>
+				<LI><P STYLE="margin-bottom: 0cm">filesystems/fat/fat.h</P>
+				<LI><P STYLE="margin-bottom: 0cm">filesystems/iso9660/Iso9660.h</P>
+			</UL>
+		</UL>
+		<LI><P STYLE="margin-bottom: 0cm">stdlib.h 
+		</P>
+	</UL>
+</UL>
+<H3><A HREF="#sommaire" NAME="v0_3_block_prbs">Probl&egrave;mes &agrave;
+r&eacute;soudre</A></H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm">La gestion des erreurs et warnings</P>
+	<LI><P STYLE="margin-bottom: 0cm">Appronfondir les tests 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">Adapter les pilotes de FS</P>
+	<LI><P STYLE="margin-bottom: 0cm">Compl&eacute;ter les fonctions</P>
+	<LI><P>g&eacute;rer les p&eacute;riphs amovibles</P>
+</UL>
+<H2><A HREF="#sommaire" NAME="v0_2_ide">Ecrire un pilote de syst&egrave;me
+de fichier en ? Le&ccedil;ons</A></H2>
+<P>R&egrave;gle n&deg;1 : Les noms des fonctions doivent commencer
+par le nom du syst&egrave;me de fichier.</P>
+<P>R&egrave;gle n&deg;2 : Le pilote doit comporter deux proc&eacute;dures
+d'initialisations :</P>
+<UL STYLE="margin-left: 0.5cm">
+	<UL STYLE="margin-left: 0.77cm">
+		<UL STYLE="margin-left: 1.27cm">
+			<LI><P>Au chargement du pilote : Enregistrer celui-ci dans la
+			table known_fs_drivers aux enregistrements correspondants aux
+			types de partitions support&eacute;s.</P>
+		</UL>
+	</UL>
+</UL>
+<UL STYLE="margin-left: 0.5cm">
+	<UL STYLE="margin-left: 0.77cm">
+		<UL STYLE="margin-left: 1.27cm">
+			<LI><P>Lors d'un montage d'un nouveau p&eacute;riph&eacute;rique :
+			Renvoyer les param&egrave;tres du pilote dans une structure
+			DRIVER* dument rempie et instancier une nouvelle copie des ses
+			variables priv&eacute;es ( mais pourquoi pas globlales au pilote.
+			)</P>
+		</UL>
+	</UL>
+</UL>
+<P>R&egrave;gle n&deg;3 : L'ouverture et la gestion des fichiers doit
+se faire par le proc&eacute;d&eacute; de descripteur de fichier.
+Chaque pilote tient &agrave; jour une table des fichiers qu'il a
+ouvert. Cette table pourra fonctionner sur le meme principe que la
+table du vfs au d&eacute;tail pr&egrave;s que les num&eacute;ros de
+descripteurs attribu&eacute;s par le vfs ne pourront etre les memes (
+en raison des trous que cela causerait dans vos tables. ). Pour
+pallier &agrave; ce probl&egrave;me, ajoutez un champ vfs_number aux
+structures point&eacute;es par vos tables qui contiendra le num&eacute;ro
+attribu&eacute; par le vfs, lors de l'appel d'un fichier basez votre
+recherche sur ce champ pour retrouver le fichier.</P>
+<P>R&egrave;gle n&deg;4 : 
+</P>
+<P><BR><BR>
+</P>
+<H2><A HREF="#sommaire" NAME="auteurs">Auteurs</A></H2>
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=2 CELLSPACING=3>
+	<COL WIDTH=173*>
+	<COL WIDTH=83*>
+	<TR>
+		<TD WIDTH=68%>
+			<P><I>vfs v0.1 (en d&eacute;veloppement)</I></P>
+		</TD>
+		<TD WIDTH=32%>
+			<P><A HREF="mailto:vincent.lecoq@free.fr">LECOQ Vincent</A></P>
+		</TD>
+	</TR>
+	<TR>
+		<TD WIDTH=68%>
+			<P><I>Documentation v0.1</I></P>
+		</TD>
+		<TD WIDTH=32%>
+			<P><A HREF="mailto:vincent.lecoq@free.fr">LECOQ Vincent</A></P>
+		</TD>
+	</TR>
+</TABLE>
+<H2><A HREF="#sommaire" NAME="voiraussi">Voir aussi</A></H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="file:///../System/Devices/ide.html">DreamOS/Doc/System/Devices/ide.html</A>
+	- Protocole IDE 
+	</P>
+	<LI><P><A HREF="file:///../System/Boot/bootload.html">DreamOS/Doc/System/Boot/bootload.html</A>
+	- Fonctionnement d'un chargeur de boot et description de la table
+	des partitions et de la structure des partitions &eacute;tendues DOS
+		</P>
+</UL>
+</BODY>
+</HTML>

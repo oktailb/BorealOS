@@ -1,0 +1,16 @@
+Voici une petite Listes des bugs.
+Il y a trois types de bug:
+	-> Bug ouvert 
+	-> Bug fermé sans comprendre pourquoi
+	-> Bug fermé
+
+Les bug ouverts				: sont les bug encore non corrrigé et on ne sait pas encore comment les corriger
+Les bug fermé sans comprendre pourquoi	: des bugs corrigé mais sans comprendre pourquoi la correction marche. Ce sont donc des bug qui peuvent revenir.
+Les bug fermé				: sont des bugs corrigé avec l'explication.
+
+
+I) Bugs ouverts
+
+II) Bug ferme sans comprendre pourquoi
+
+III) Bug fermé

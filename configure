@@ -1,0 +1,69 @@
+#!/bin/sh
+
+yesno ()
+{
+  while true; do
+  echo -n "$1 (Y/n) ? "
+  read ans
+  case X$ans in
+   X|Xy|XY) return 0;;
+   Xn|XN) return 1;;
+  esac
+  done
+}
+
+ask ()
+{
+askvar=$2
+eval old=\$$askvar
+eval echo -n \""$1 [$old] : "\" 
+read $askvar
+eval test -z \"\$$askvar\" && eval $askvar=\'$old\'
+}
+
+DEST=./make_include/config.mk
+
+echo "#Variable de configuration" > $DEST
+
+echo "Si la reponse est juste appuyez sur entr�"
+
+#Determine le repertoire courant
+echo -n "TOPDIR=" >>$DEST
+pwd >> $DEST
+
+#Determine le compilateur C
+GCCDIR=`whereis gcc | cut -d " " -f2`
+ask "le chemin de gcc est :" GCCDIR
+echo "CC="$GCCDIR >> $DEST
+
+#Determine le compilateur ASM
+
+NASMDIR=`whereis nasm | cut -d " " -f2`
+ask "le chemin de nasm est :" NASMDIR
+echo "NASM="$NASMDIR >> $DEST
+
+#Determine le programme make
+
+MAKEDIR=`whereis make | cut -d " " -f2`
+ask "le chemin de make est :" MAKEDIR
+echo "MAKE="$MAKEDIR >> $DEST
+
+#Determine le programme ld
+
+LDDIR=`whereis ld | cut -d " " -f2`
+ask "le chemin de ld est :" LDDIR
+echo "LD="$LDDIR >> $DEST
+
+
+#Determine l'emplamcent du floppy
+
+FLOPPY="/mnt/floppy"
+ask "le chemin du floppy est :" FLOPPY
+echo "FLOPPY="$FLOPPY >> $DEST
+
+#Determine l'emplacement de bochs
+
+BOCHSDIR="BOCHS_DIR=/usr/local/bochs/latest"
+ask "le chemin ou sont contenu les fichiers de config de bochs est :" BOCHSDIR
+echo "BOCHS_DIR=/usr/local/bochs/latest" >> $DEST
+

@@ -1,0 +1,3 @@
+Librairie de graphes
+
+Le but est de se forger une librairie utile pour gerer tout ce qui ressemble de pres ou de loin a un graphe.

@@ -1,0 +1,4 @@
+gdt.o: gdt.c /data/Work/borealos/include/../include/types.h \
+  /data/Work/borealos/include/../include/gdt.h
+idt.o: idt.c /data/Work/borealos/include/../include/types.h \
+  /data/Work/borealos/include/../include/idt.h

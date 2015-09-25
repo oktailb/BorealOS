@@ -1,0 +1,7 @@
+ide.o: ide.c /data/Work/borealos/include/drivers/block/ide/ide.h \
+  /data/Work/borealos/include/drivers/block/block/block.h \
+  /data/Work/borealos/include/system.h \
+  /data/Work/borealos/include/types.h /data/Work/borealos/include/klib.h \
+  /data/Work/borealos/include/system.h \
+  /data/Work/borealos/include/drivers/block/packetcd/packetcd.h \
+  /data/Work/borealos/include/drivers/block/packet/packet.h

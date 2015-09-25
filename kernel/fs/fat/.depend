@@ -1,0 +1,16 @@
+fat.o: fat.c /data/Work/borealos/include/drivers/fs/fat/fat.h \
+  /data/Work/borealos/include/stdlib.h \
+  /data/Work/borealos/include/stddef.h \
+  /data/Work/borealos/include/types.h \
+  /data/Work/borealos/include/compiler.h \
+  /data/Work/borealos/include/vfs/vfs.h \
+  /data/Work/borealos/include/drivers/block/block/block.h \
+  /data/Work/borealos/include/system.h /data/Work/borealos/include/klib.h \
+  /data/Work/borealos/include/system.h \
+  /data/Work/borealos/include/drivers/block/ide/ide.h \
+  /data/Work/borealos/include/drivers/block/block/block.h \
+  /data/Work/borealos/include/drivers/block/packetcd/packetcd.h \
+  /data/Work/borealos/include/drivers/block/packet/packet.h \
+  /data/Work/borealos/include/string.h \
+  /data/Work/borealos/include/vfs/filesystems.h \
+  /data/Work/borealos/include/drivers/fs/iso9660/Iso9660.h

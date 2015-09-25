@@ -1,0 +1,17 @@
+Comment installer bochs pour qu'il fonctionne avec le projet OWL
+
+1) telechargez la derniére version stable (pour l'instant la 1.2.1)
+2) decompressez le fichier :  tar -zxvf bochs-1.2.1.tar.gz
+3) passez en root : su root
+4) cd bochs-1.2.1
+5) ./configure (les paramétres de bases nous conviennent)
+6) make 
+7)make install
+
+8) si les étapes 6 et 7 se sont bien passées alors on continue autrement essayer de corriger les erreurs
+
+9)On install les font vga necessaire a bochs
+   cd /usr/local/bochs/latest
+   mkfontdir
+
+10)C'est fini

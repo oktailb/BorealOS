@@ -1,0 +1,4 @@
+packet.o: packet.c \
+  /data/Work/borealos/include/drivers/block/packet/packet.h \
+  /data/Work/borealos/include/system.h \
+  /data/Work/borealos/include/types.h

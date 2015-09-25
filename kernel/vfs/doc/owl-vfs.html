@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-15">
+	<TITLE>OWL-VFS</TITLE>
+	<META NAME="GENERATOR" CONTENT="kwrite  (Linux)">
+	<META NAME="CHANGEDBY" CONTENT="LECOQ Vincent">
+	<STYLE>
+	<!--
+		@page { size: 21cm 29.7cm; margin: 2cm }
+	-->
+	</STYLE>
+</HEAD>
+<BODY>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999" STYLE="page-break-before: always">
+		<COL WIDTH=128*>
+		<COL WIDTH=128*>
+		<TR>
+			<TD WIDTH=50%>
+				<P ALIGN=LEFT><FONT COLOR="#ffffff"><B>/DreamOS/Doc/DreamOS/serverStorage/vfs/vfs.html</B></FONT></P>
+			</TD>
+			<TD WIDTH=50%>
+				<P ALIGN=RIGHT><FONT COLOR="#ffffff"><B>Projet de documentation
+				de DreamOS</B></FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999">
+		<COL WIDTH=256*>
+		<TR>
+			<TD WIDTH=100%>
+				<P ALIGN=CENTER><FONT COLOR="#ffffff"><FONT SIZE=6><B>OWL Virtual
+				File System (VFS)</B></FONT></FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<CENTER>
+	<TABLE WIDTH=90% BORDER=0 CELLPADDING=0 CELLSPACING=0 BGCOLOR="#999999">
+		<COL WIDTH=256*>
+		<TR>
+			<TD WIDTH=100%>
+				<P ALIGN=CENTER><FONT COLOR="#ffffff">Description du vfs de OWL
+				et de son API<BR>&nbsp;</FONT></P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR WIDTH=517 ALIGN=CENTER>
+<CENTER>
+	<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=0>
+		<COL WIDTH=89*>
+		<COL WIDTH=167*>
+		<TR>
+			<TD WIDTH=35%>
+				<P><B>Auteur originel :</B> 
+				</P>
+				<BLOCKQUOTE>Oktail Bezakhim, KOTW. <BR><A HREF="mailto:vincent.lecoq@free.fr?subject=OWL-VFS Doc">vincent.lecoq@free.fr
+				</A><BR><A HREF="http://vincent.lecoq.free.fr/">http://vincent.lecoq.free.fr</A></BLOCKQUOTE>
+				<P><B>Auteur(s) :</B> 
+				</P>
+				<BLOCKQUOTE>LECOQ Vincent @lias Oktail Bezakhim, KOTW.
+				<BR><A HREF="mailto:vincent.lecoq@free.fr?subject=OWL-VFS Doc">vincent.lecoq@free.fr
+				</A><BR><A HREF="http://vincent.lecoq.free.fr/">http://vincent.lecoq.free.fr</A><BR>
+				<BR>
+				</BLOCKQUOTE>
+			</TD>
+			<TD WIDTH=65%>
+				<P><B>Version : </B>0.51<BR><B>Date de c&eacute;ation du fichier
+				:</B> 20 Janvier 2002 <BR><B>Date de derni&egrave;re mise &agrave;
+				jour du fichier :</B> 20 Janvier 2002 
+				</P>
+				<P><B>R&eacute;visions :</B>  
+				</P>
+				<P><B>TODO :</B> <BR>Maintenir ce document &agrave; jour 
+				</P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
+<HR WIDTH=517 ALIGN=CENTER>
+<H2><A NAME="sommaire"></A>Sommaire</H2>
+<BLOCKQUOTE><A HREF="#intro">Introduction</A> <BR><A HREF="#present">Pr&eacute;sentation
+g&eacute;n&eacute;rale</A> 
+</BLOCKQUOTE>
+<BLOCKQUOTE><A HREF="#auteurs">Auteurs</A><BR><A HREF="#voiraussi">Voir
+aussi </A>
+</BLOCKQUOTE>
+<H2><A HREF="#sommaire" NAME="intro">Introduction</A></H2>
+<P ALIGN=JUSTIFY>Cette documentation &agrave; pour but de pr&eacute;senter
+le fonctionnement et l'utilisation du syst&egrave;me de fichier
+virtuel de OWL. Elle d&eacute;crit ses structures de donn&eacute;es
+et son API.</P>
+<H2><A HREF="#sommaire" NAME="present">Pr&eacute;sentation g&eacute;n&eacute;rale</A></H2>
+<P ALIGN=JUSTIFY>Le VFS est une couche d'abstraction du syst&egrave;me
+d'exploitation qui permet d'acc&eacute;der aux fichiers et donn&eacute;es
+des p&eacute;riph&eacute;riques de stockage de mani&egrave;re
+transparente quelque soit le p&eacute;riph&eacute;rique ou le syst&egrave;me
+de fichier, qu'ils soient locaux ou distants. 
+</P>
+<P ALIGN=JUSTIFY>Le but du VFS d'OWL est de pr&eacute;senter une API
+compatible avec les appels POSIX.</P>
+<P ALIGN=JUSTIFY>OWL-VFS 0.1 se compose en premier d'une fonction
+d'initialisation qui monte le volume racine sur '/' et monte ensuite
+les autres volumes &agrave; partir du fichier /etc/fstab. Ensuite, le
+vfs propose des fonctions utilitaires pour (d&eacute;)monter les
+volumes, lire, &eacute;crire des fichiers ou des r&eacute;pertoires.</P>
+<H2><A HREF="#sommaire">Fonctionnement global</A></H2>
+<P ALIGN=JUSTIFY><BR><BR>
+</P>
+<H2><A HREF="#sommaire" NAME="auteurs">Auteurs</A></H2>
+<TABLE WIDTH=100% BORDER=1 CELLPADDING=2 CELLSPACING=3>
+	<COL WIDTH=158*>
+	<COL WIDTH=98*>
+	<TR>
+		<TD WIDTH=62%>
+			<P>vfs 0.1</P>
+		</TD>
+		<TD WIDTH=38%>
+			<BLOCKQUOTE STYLE="text-align: left"><A HREF="mailto:vincent.lecoq@free.fr?subject=OWL-VFS Doc">vincent.lecoq@free.fr
+			</A>
+			</BLOCKQUOTE>
+		</TD>
+	</TR>
+</TABLE>
+<H2><A HREF="#sommaire" NAME="voiraussi">Voir aussi</A></H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="file:///doc/System/Devices/ide.html">DreamOS/Doc/System/Devices/ide.html</A>
+	- Protocole IDE 
+	</P>
+	<LI><P STYLE="margin-bottom: 0cm">OWL/Doc/System/Devices/block.html
+	&#8211; Pilote mode block</P>
+	<LI><P><A HREF="file:///doc/System/Boot/bootload.html">DreamOS/Doc/System/Boot/bootload.html</A>
+	- Fonctionnement d'un chargeur de boot et description de la table
+	des partitions et de la structure des partitions &eacute;tendues DOS
+		</P>
+</UL>
+</BODY>
+</HTML>

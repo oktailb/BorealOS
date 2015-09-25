@@ -1,0 +1,24 @@
+    *******CONVENTIONS*********
+
+Ces conventions sont là pour faciliter la lecture du code. 
+Il serait très bon que tous les participants les respectent :-))  
+
+Conventions pour le nom des variables
+
+la premiere lettre doit etre en minuscule, et si la nom peut etre décomposé en plusieurs mots, la première lettre de chaque mot devra etre en majuscule.
+Exemple motMotMot ou uneVariableDExemple 
+
+Conventions pour le nom des sructures
+
+Les nom des strucutre respecte la meme convention que les variables saus que lenom doit se finir par _t. De plus chaque structure doit etre retypé avec un typedef, Exemple
+
+typedef struct {
+	...
+} motMotMot_t;  
+
+
+Conventions pour le type des varaibles
+
+Essayer d'utiliser les types de varaibles definis dans commun/system.h.
+A savoir u8, u16 , u32 et u64 pour creer des champs de bits non signés de longueur 8 bits, 16 bits, etc ... Meme chose avec s8, s16 , etc ... 
+

@@ -1,0 +1,54 @@
+<BorealAPP>
+    <boreal window>
+	<window control>L_CLOSE</window control>
+	<window control>R_MAXIMISE</window control>
+	<theme path>/usr/share/boreal/themes/default</theme path>
+	<x_pos>10</x_pos>
+	<y_pos>10</y_pos>
+	<title>eden</title>
+	<on press func>move</on press func>
+	<on release func>place</on release func>
+	<focus>ONTOP</focus>
+        <wsize>1024</wsize>
+	<hsize>1024</hsize>
+        <depth>32</depth>
+	<contents>
+	    <button>
+		<x_pos>64</x_pos>
+		<y_pos>64</y_pos>
+		<width>64</width>
+		<height>32</height>
+		<on press func>rien</on press func>
+		<on release func>quit</on release func>
+		<mode>TEXT</mode>
+		<text>Hello World</text>
+	    </button>
+	</contents>
+    </boreal window>
+    <boreal window>
+	<window control>L_CLOSE</window control>
+	<window control>R_MAXIMISE</window control>
+	<theme path>/usr/share/boreal/themes/default</theme path>
+	<x_pos>10</x_pos>
+	<y_pos>10</y_pos>
+	<title>enfer</title>
+	<on press func>move</on press func>
+	<on release func>place</on release func>
+	<focus>NORMAL</focus>
+        <wsize>1024</wsize>
+	<hsize>1024</hsize>
+        <depth>32</depth>
+	<contents>
+	    <button>
+		<x_pos>64</x_pos>
+		<y_pos>64</y_pos>
+		<width>64</width>
+		<height>32</height>
+		<on press func>rien</on press func>
+		<on release func>quit</on release func>
+		<mode>TEXT</mode>
+		<text>Good bye World</text>
+	    </button>
+	</contents>
+    </boreal window>
+</BorealAPP>
